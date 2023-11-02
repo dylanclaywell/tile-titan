@@ -40,17 +40,17 @@ export function useMouse({ ref: componentRef }: { ref: Ref<HTMLElement | null> }
   }
 
   function register() {
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('mousedown', handleMouseDown)
-    window.addEventListener('mouseup', handleMouseUp)
-    window.addEventListener('mouseleave', handleMouseLeave)
+    componentRef.value?.addEventListener('mousemove', handleMouseMove)
+    componentRef.value?.addEventListener('mousedown', handleMouseDown)
+    componentRef.value?.addEventListener('mouseup', handleMouseUp)
+    componentRef.value?.addEventListener('mouseleave', handleMouseLeave)
   }
 
   function unregister() {
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('mousedown', handleMouseDown)
-    window.removeEventListener('mouseup', handleMouseUp)
-    window.removeEventListener('mouseleave', handleMouseLeave)
+    componentRef.value?.removeEventListener('mousemove', handleMouseMove)
+    componentRef.value?.removeEventListener('mousedown', handleMouseDown)
+    componentRef.value?.removeEventListener('mouseup', handleMouseUp)
+    componentRef.value?.removeEventListener('mouseleave', handleMouseLeave)
   }
 
   return { state, register, unregister }

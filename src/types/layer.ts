@@ -10,7 +10,7 @@ export const TileLayer = z.object({
   name: z.string().min(1),
   data: Tilemap,
   isVisible: z.boolean(),
-  sortOrder: z.number().int().min(0),
+  sortOrder: z.number().int().min(0)
 })
 
 export const ObjectLayer = z.object({
@@ -19,7 +19,7 @@ export const ObjectLayer = z.object({
   name: z.string().min(1),
   data: z.array(Object),
   isVisible: z.boolean(),
-  sortOrder: z.number().int().min(0),
+  sortOrder: z.number().int().min(0)
 })
 
 export const StructureLayer = z.object({
@@ -28,7 +28,7 @@ export const StructureLayer = z.object({
   name: z.string().min(1),
   data: z.array(Structure),
   isVisible: z.boolean(),
-  sortOrder: z.number().int().min(0),
+  sortOrder: z.number().int().min(0)
 })
 
 export const Layer = z.union([TileLayer, ObjectLayer, StructureLayer])

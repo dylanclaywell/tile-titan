@@ -65,7 +65,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="mainView" class="flex-grow relative bg-gray-100">
+  <div ref="mainView" class="flex-grow relative bg-gray-100 overflow-hidden">
     MainView Mouse State
     <div>
       {{ mainViewMouse.state.value.buttons.left }}

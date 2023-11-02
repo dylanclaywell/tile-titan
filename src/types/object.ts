@@ -14,6 +14,6 @@ export const Object = z.object({
   color: z
     .string()
     .regex(/^#[0-9a-f]{6}$/i)
-    .optional(),
+    .optional()
 })
 export type ObjectType = z.infer<typeof Object>

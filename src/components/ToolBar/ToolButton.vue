@@ -4,11 +4,11 @@ type Props = {
   isSelected: boolean
   icon: string
   name: string
+  onClick?: () => void
 }
 
 const props = defineProps<Props>()
 
-const onClick = () => undefined
 let classes = ''
 
 if (props.isSelected) {
@@ -20,7 +20,7 @@ if (props.isSelected) {
   <button
     :title="name"
     :class="`w-10 h-10 cursor-default hover:bg-gray-200 hover:border hover:border-gray-300 rounded-md disabled:text-gray-400 disabled:border-0 disabled:bg-transparent ${classes}`"
-    @click="onClick"
+    @click="props.onClick"
     :disabled="props.isDisabled"
   >
     <i :class="`fa-solid fa-${props.icon}`"></i>
