@@ -21,8 +21,6 @@ const canvasTop = computed(() => {
 
   const newTop = oldTop + mainViewMouse.state.value.y - mainViewMouse.state.value.previousY
 
-  console.log(oldTop, newTop, mainViewMouse.state.value.y, mainViewMouse.state.value.previousY)
-
   return mainViewMouse.state.value.buttons.middle ? newTop : oldTop
 })
 const canvasLeft = computed(() => {

@@ -4,6 +4,7 @@ import ResourceList from '@/components/ResourceList/ResourceList.vue'
 import ToolBar from '@/components/ToolBar/ToolBar.vue'
 import ToolSection from '@/components/ToolBar/ToolSection.vue'
 import Tool from '@/components/ToolBar/ToolButton.vue'
+import FilePropertyView from '@/views/FilePropertyView.vue'
 import { useEditorStore } from '@/stores/editor'
 
 const store = useEditorStore()
@@ -35,6 +36,7 @@ const store = useEditorStore()
         />
       </ResourceList>
     </div>
+    <FilePropertyView v-if="store.selectedFileId" />
   </div>
 </template>
 

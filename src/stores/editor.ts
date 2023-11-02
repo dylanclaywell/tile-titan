@@ -7,34 +7,28 @@ import type { FileType } from '@/types/file'
 export const useEditorStore = defineStore('editor', () => {
   const selectedFileId = ref<string | null>(null)
   const files = ref<FileType[]>([])
-  const tileWidth = ref(32)
-  const tileHeight = ref(32)
-  const width = ref(10)
-  const height = ref(10)
 
-  function setTileWidth(width: number) {
-    tileWidth.value = width
-  }
+  const selectedFile = computed(() => {
+    return files.value.find((f) => f.id === selectedFileId.value)
+  })
+  const tileWidthPx = computed(() => selectedFile.value?.tileWidth ?? 0)
+  const tileHeightPx = computed(() => selectedFile.value?.tileHeight ?? 0)
+  const widthPx = computed(
+    () => (selectedFile.value?.width ?? 0) * (selectedFile.value?.tileWidth ?? 0)
+  )
+  const heightPx = computed(
+    () => (selectedFile.value?.height ?? 0) * (selectedFile.value?.tileHeight ?? 0)
+  )
 
-  function setTileHeight(height: number) {
-    tileHeight.value = height
-  }
-
-  function setWidth(w: number) {
-    width.value = w
-  }
-
-  function setHeight(h: number) {
-    height.value = h
-  }
-
-  function updateFile(fileId: string) {
+  function updateFile(fileId: string, newFile: FileType) {
     const file = files.value.find((f) => f.id === fileId)
+
     if (file) {
-      file.width = width.value
-      file.height = height.value
-      file.tileWidth = tileWidth.value
-      file.tileHeight = tileHeight.value
+      file.name = newFile.name
+      file.width = newFile.width
+      file.height = newFile.height
+      file.tileWidth = newFile.tileWidth
+      file.tileHeight = newFile.tileHeight
     }
   }
 
@@ -62,22 +56,7 @@ export const useEditorStore = defineStore('editor', () => {
     selectedFileId.value = fileId
   }
 
-  const tileWidthPx = computed(() => tileWidth.value)
-  const tileHeightPx = computed(() => tileHeight.value)
-  const widthPx = computed(() => width.value * tileWidth.value)
-  const heightPx = computed(() => height.value * tileHeight.value)
-
   return {
-    tileWidth,
-    tileHeight,
-    setTileWidth,
-    setTileHeight,
-
-    width,
-    height,
-    setWidth,
-    setHeight,
-
     tileWidthPx,
     tileHeightPx,
     widthPx,
@@ -88,6 +67,7 @@ export const useEditorStore = defineStore('editor', () => {
     newFile,
     deleteFile,
     selectFile,
-    selectedFileId
+    selectedFileId,
+    selectedFile
   }
 })
