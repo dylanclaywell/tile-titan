@@ -49,6 +49,7 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   function deleteFile(fileId: string) {
+    selectedFileId.value = null
     files.value = files.value.filter((f) => f.id !== fileId)
   }
 

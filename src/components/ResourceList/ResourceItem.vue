@@ -11,6 +11,21 @@ export type Props = {
 }
 
 const props = defineProps<Props>()
+
+function del(event: Event) {
+  event.stopPropagation()
+  props.onDelete?.()
+}
+
+function edit(event: Event) {
+  event.stopPropagation()
+  props.onEdit?.()
+}
+
+function show(event: Event) {
+  event.stopPropagation()
+  props.onShow?.()
+}
 </script>
 
 <template>
@@ -25,21 +40,21 @@ const props = defineProps<Props>()
       <button
         v-if="props.onEdit"
         class="group-hover:visible invisible hover:text-green-600"
-        @click="props.onEdit"
+        @click="edit"
       >
         <i class="fa-solid fa-pencil"></i>
       </button>
       <button
         v-if="props.onShow"
         class="group-hover:visible invisible hover:text-yellow-600"
-        @click="props.onShow"
+        @click="show"
       >
         <i :class="`fa-solid ${isVisible ? 'fa-eye' : 'fa-eye-slash'}`"></i>
       </button>
       <button
         v-if="props.onDelete"
         class="group-hover:visible invisible hover:text-red-600"
-        @click="props.onDelete"
+        @click="del"
       >
         <i class="fa-solid fa-trash-can"></i>
       </button>

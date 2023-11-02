@@ -22,10 +22,6 @@ type Errors = {
 
 const store = useEditorStore()
 
-if (!store.selectedFile) {
-  throw new Error('No file selected')
-}
-
 const errors = ref<Errors>({})
 
 function submit(event: Event) {
