@@ -29,8 +29,12 @@ onUnmounted(() => {
     <TileLayerToolBar v-if="store.selectedLayer?.type === 'tile'" />
     <StructureLayerToolBar v-if="store.selectedLayer?.type === 'structure'" />
     <ObjectLayerToolBar v-if="store.selectedLayer?.type === 'object'" />
-    <div ref="canvasContainer" class="relative">
-      <FileCanvas :container-view-mouse="canvasContainerMouse" v-if="store.selectedFileId" />
+    <div ref="canvasContainer" class="relative h-full">
+      <FileCanvas
+        :container-ref="canvasContainer"
+        :container-view-mouse="canvasContainerMouse"
+        v-if="store.selectedFileId"
+      />
     </div>
   </div>
 </template>

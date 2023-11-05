@@ -7,6 +7,7 @@ import colors from '@/colors'
 
 export type Props = {
   containerViewMouse: ReturnType<typeof useMouse>
+  containerRef: HTMLDivElement | null
 }
 
 const props = defineProps<Props>()
@@ -20,21 +21,27 @@ const canvasMouse = useMouse({
 })
 
 const canvasTop = computed(() => {
-  const oldTop = Number(canvas.value?.style?.top.split('px')[0]) || 0
+  const oldTop =
+    Number(canvas.value?.style?.top.split('px')[0]) || (props.containerRef?.clientHeight ?? 0) / 2
 
   const newTop =
     oldTop + props.containerViewMouse.state.value.y - props.containerViewMouse.state.value.previousY
 
-  return props.containerViewMouse.state.value.buttons.middle ? newTop : oldTop
+  const value = props.containerViewMouse.state.value.buttons.middle ? newTop : oldTop
+
+  return `${value}px`
 })
-const canvasLeft = computed(() => {
-  const oldLeft = Number(canvas.value?.style?.left.split('px')[0]) || 0
+const canvasLeftPx = computed(() => {
+  const oldLeft =
+    Number(canvas.value?.style?.left.split('px')[0]) || (props.containerRef?.clientWidth ?? 0) / 2
   const newLeft =
     oldLeft +
     props.containerViewMouse.state.value.x -
     props.containerViewMouse.state.value.previousX
 
-  return props.containerViewMouse.state.value.buttons.middle ? newLeft : oldLeft
+  const value = props.containerViewMouse.state.value.buttons.middle ? newLeft : oldLeft
+
+  return `${value}px`
 })
 
 function drawCanvas() {
@@ -91,6 +98,6 @@ onUnmounted(() => {
     @click="drawCanvas"
     ref="canvas"
     class="border-r border-b border-gray-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-    :style="`top: ${canvasTop}px; left: ${canvasLeft}px;`"
+    :style="`top: ${canvasTop}; left: ${canvasLeftPx};`"
   ></canvas>
 </template>
