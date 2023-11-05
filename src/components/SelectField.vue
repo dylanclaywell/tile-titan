@@ -65,8 +65,12 @@ onUnmounted(() => {
         v-for="option in options"
         v-bind:key="option.value"
         :class="`
-          text-left p-4 hover:bg-gray-300 first:rounded-t-md last:rounded-b-md transition-all
-          ${option.value === value ? 'bg-blue-400' : ''}
+          text-left p-4 first:rounded-t-md last:rounded-b-md transition-all
+          ${
+            option.value === value
+              ? 'bg-blue-500 hover:bg-blue-400 text-white'
+              : 'hover:bg-gray-200'
+          }
           `"
         @click="
           () => {

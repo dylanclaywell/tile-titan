@@ -12,6 +12,7 @@
     "prettier": "prettier --write src/"
   },
   "dependencies": {
+    "localforage": "^1.10.0",
     "pinia": "^2.1.7",
     "uuid": "^9.0.1",
     "vue": "^3.3.4",

@@ -16,6 +16,8 @@ export type ToolType =
   | 'selectObject'
 
 export const useEditorStore = defineStore('editor', () => {
+  const selectedTilesetId = ref<string | null>(null)
+
   const selectedTool = ref<ToolType | null>(null)
 
   const selectedLayerId = ref<string | null>(null)
@@ -75,6 +77,10 @@ export const useEditorStore = defineStore('editor', () => {
 
   function selectFile(fileId: string) {
     selectedFileId.value = fileId
+  }
+
+  function setFiles(newFiles: FileType[]) {
+    files.value = newFiles
   }
 
   //////////////////// Layer Actions ////////////////////
@@ -139,7 +145,16 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTool.value = tool
   }
 
+  //////////////////// Tileset Actions ////////////////////
+  function selectTileset(id: string | null) {
+    selectedTilesetId.value = id
+  }
+
   return {
+    /// Tilesets
+    selectedTilesetId,
+    selectTileset,
+
     /// Tools
     selectedTool,
     selectTool,
@@ -150,6 +165,7 @@ export const useEditorStore = defineStore('editor', () => {
     newFile,
     deleteFile,
     selectFile,
+    setFiles,
     selectedFileId,
     selectedFile,
     tileWidthPx,

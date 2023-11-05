@@ -1,5 +1,25 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import localforage from 'localforage'
+
+import { useEditorStore } from './stores/editor'
+import { onMounted } from 'vue'
+import { File } from './types/file'
+
+const store = useEditorStore()
+
+store.$subscribe((mutation, state) => {
+  // Need to clone the state because localforage doesn't like the Proxy objects
+  const clonedFiles = JSON.parse(JSON.stringify(state.files))
+
+  localforage.setItem('files', clonedFiles)
+})
+
+onMounted(() => {
+  localforage.getItem('files').then((files) => {
+    store.setFiles(File.array().parse(files))
+  })
+})
 </script>
 
 <template>

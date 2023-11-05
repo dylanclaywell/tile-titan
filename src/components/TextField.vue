@@ -7,6 +7,7 @@ export type Props = {
   label: string
   hasError?: boolean
   helperText?: string
+  readonly?: boolean
 }
 
 const props = defineProps<Props>()
@@ -20,7 +21,13 @@ const helperTextClass = `${props.hasError ? 'text-red-600' : 'text-gray-500'} te
     <label class="uppercase text-sm tracking-widest text-gray-400" :for="id">
       {{ props.label }}
     </label>
-    <input :value="props.value" :name="props.name" class="border rounded-md p-2 w-full" :id="id" />
+    <input
+      :readonly="props.readonly"
+      :value="props.value"
+      :name="props.name"
+      :class="`border rounded-md p-2 w-full ${props.readonly ? 'cursor-default' : ''}`"
+      :id="id"
+    />
     <span v-if="props.helperText" :class="helperTextClass">{{ props.helperText }}</span>
   </div>
 </template>
