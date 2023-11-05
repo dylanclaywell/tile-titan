@@ -40,14 +40,21 @@ async function onChange(event: Event) {
 </script>
 
 <template>
-  <div class="basis-1/2 h-full flex-grow p-2">
+  <div class="basis-1/2 h-full flex-grow">
     <div>
-      <ToolBar>
-        <SelectField :options="options" :on-change="() => {}" value="1" />
+      <ToolBar class="border-b">
         <ToolSection>
-          <FileUploader label="{label}" name="New tileset" :on-change="onChange" />
+          <FileUploader name="New tileset" :on-change="onChange">
+            <div
+              className="w-10 h-10 cursor-default hover:bg-gray-200 hover:border hover:border-gray-300 rounded-md flex justify-center items-center"
+            >
+              <i className="fa-solid fa-file-circle-plus"></i></div
+          ></FileUploader>
         </ToolSection>
       </ToolBar>
+      <div class="p-2 border-b">
+        <SelectField :options="options" :on-change="() => {}" value="1" />
+      </div>
     </div>
     <div class="h-full">
       <div key="{currentTileset.id}" class="relative h-full">
