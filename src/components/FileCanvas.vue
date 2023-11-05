@@ -6,7 +6,7 @@ import { useMouse } from '@/hooks/useMouse'
 import colors from '@/colors'
 
 export type Props = {
-  mainViewMouse: ReturnType<typeof useMouse>
+  containerViewMouse: ReturnType<typeof useMouse>
 }
 
 const props = defineProps<Props>()
@@ -16,23 +16,25 @@ const store = useEditorStore()
 const canvas = ref<HTMLCanvasElement | null>(null)
 
 const canvasMouse = useMouse({
-  ref: canvas
+  ref: canvas,
 })
 
 const canvasTop = computed(() => {
   const oldTop = Number(canvas.value?.style?.top.split('px')[0]) || 0
 
   const newTop =
-    oldTop + props.mainViewMouse.state.value.y - props.mainViewMouse.state.value.previousY
+    oldTop + props.containerViewMouse.state.value.y - props.containerViewMouse.state.value.previousY
 
-  return props.mainViewMouse.state.value.buttons.middle ? newTop : oldTop
+  return props.containerViewMouse.state.value.buttons.middle ? newTop : oldTop
 })
 const canvasLeft = computed(() => {
   const oldLeft = Number(canvas.value?.style?.left.split('px')[0]) || 0
   const newLeft =
-    oldLeft + props.mainViewMouse.state.value.x - props.mainViewMouse.state.value.previousX
+    oldLeft +
+    props.containerViewMouse.state.value.x -
+    props.containerViewMouse.state.value.previousX
 
-  return props.mainViewMouse.state.value.buttons.middle ? newLeft : oldLeft
+  return props.containerViewMouse.state.value.buttons.middle ? newLeft : oldLeft
 })
 
 function drawCanvas() {
@@ -69,7 +71,7 @@ watch(
   () => {
     drawCanvas()
   },
-  { deep: true }
+  { deep: true },
 )
 
 onMounted(() => {

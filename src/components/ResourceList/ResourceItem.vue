@@ -31,10 +31,13 @@ function show(event: Event) {
 <template>
   <button
     :class="`group flex items-center p-2 gap-2 select-none  ${
-      props.isSelected ? 'hover:bg-blue-400 bg-blue-500' : 'hover:bg-gray-200'
+      props.isSelected ? 'text-white hover:bg-blue-500 bg-blue-600' : 'text-black hover:bg-gray-200'
     }`"
   >
-    <i v-if="props.icon" :class="`text-gray-500 fa-solid fa-${props.icon}`"></i>
+    <i
+      v-if="props.icon"
+      :class="`fa-solid fa-${props.icon} ${props.isSelected ? 'text-white' : 'text-gray-500'}`"
+    ></i>
     {{ props.name }}
     <div class="flex-grow flex justify-end space-x-2">
       <button

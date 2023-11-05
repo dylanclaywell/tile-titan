@@ -8,18 +8,14 @@ type Props = {
 }
 
 const props = defineProps<Props>()
-
-let classes = ''
-
-if (props.isSelected) {
-  classes += 'bg-gray-300 border border-gray-400'
-}
 </script>
 
 <template>
   <button
     :title="name"
-    :class="`w-10 h-10 cursor-default hover:bg-gray-200 hover:border hover:border-gray-300 rounded-md disabled:text-gray-400 disabled:border-0 disabled:bg-transparent ${classes}`"
+    :class="`w-10 h-10 cursor-default hover:bg-gray-200 hover:border hover:border-gray-300 rounded-md disabled:text-gray-400 disabled:border-0 disabled:bg-transparent ${
+      props.isSelected ? 'bg-gray-300 border border-gray-400' : 'bg-white border border-transparent'
+    }`"
     @click="props.onClick"
     :disabled="props.isDisabled"
   >

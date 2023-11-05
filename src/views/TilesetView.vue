@@ -1,12 +1,26 @@
 <script setup lang="ts">
+import SelectField from '@/components/SelectField.vue'
 import { ref } from 'vue'
 
 const currentTileset = ref('')
+
+const options = [
+  {
+    value: '1',
+    label: 'Tileset 1',
+  },
+  {
+    value: '2',
+    label: 'Tileset 2',
+  },
+]
 </script>
 
 <template>
-  <div class="basis-1/4 h-full">
-    <div></div>
+  <div class="basis-1/2 h-full flex-grow">
+    <div>
+      <SelectField :options="options" :on-change="() => {}" value="1" />
+    </div>
     <div class="h-full">
       <div key="{currentTileset.id}" class="relative h-full">
         <img

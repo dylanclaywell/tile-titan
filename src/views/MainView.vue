@@ -2,28 +2,36 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 
 import FileCanvas from '@/components/FileCanvas.vue'
+import TileLayerToolBar from '@/components/TileLayerToolBar.vue'
+import StructureLayerToolBar from '@/components/StructureLayerToolBar.vue'
+import ObjectLayerToolBar from '@/components/ObjectLayerToolBar.vue'
 import { useEditorStore } from '@/stores/editor'
 import { useMouse } from '@/hooks/useMouse'
 
 const store = useEditorStore()
-const mainView = ref<HTMLDivElement | null>(null)
+const canvasContainer = ref<HTMLDivElement | null>(null)
 
-const mainViewMouse = useMouse({
-  ref: mainView
+const canvasContainerMouse = useMouse({
+  ref: canvasContainer,
 })
 
 onMounted(() => {
-  mainViewMouse.register()
+  canvasContainerMouse.register()
 })
 
 onUnmounted(() => {
-  mainViewMouse.unregister()
+  canvasContainerMouse.unregister()
 })
 </script>
 
 <template>
-  <div ref="mainView" class="flex-grow relative bg-gray-100 overflow-hidden">
-    <FileCanvas :main-view-mouse="mainViewMouse" v-if="store.selectedFileId" />
+  <div ref="canvasContainer" class="flex-grow bg-gray-100 overflow-hidden">
+    <TileLayerToolBar v-if="store.selectedLayer?.type === 'tile'" />
+    <StructureLayerToolBar v-if="store.selectedLayer?.type === 'structure'" />
+    <ObjectLayerToolBar v-if="store.selectedLayer?.type === 'object'" />
+    <div ref="canvasContainer" class="relative">
+      <FileCanvas :container-view-mouse="canvasContainerMouse" v-if="store.selectedFileId" />
+    </div>
   </div>
 </template>
 
