@@ -46,8 +46,8 @@ onUnmounted(() => {
       '[&_i]:transition-all [&_i]:duration-300 [&_i]:ease-in-out min-w-[10rem]'
       ${
         isOpen
-          ? '[&_i]:rotate-0 [&_label]:border-b-0 [&_label]:rounded-bl-none [&_label]:rounded-br-none'
-          : '[&_i]:-rotate-180'
+          ? '[&_i]:-rotate-180'
+          : '[&_i]:rotate-0 [&_label]:border-b-0 [&_label]:rounded-bl-none [&_label]:rounded-br-none'
       }
     `"
       label="Tileset"
@@ -55,7 +55,7 @@ onUnmounted(() => {
       placeholder="Select a tileset"
       @click="toggleOpen"
       :value="selectedOption?.value"
-      rightIconName="chevron-down"
+      rightIcon="chevron-down"
     />
     <menu
       v-if="isOpen"

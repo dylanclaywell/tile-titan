@@ -4,6 +4,7 @@ import { v4 as generateId } from 'uuid'
 
 import type { FileType } from '@/types/file'
 import type { TypeOfLayer as TypeOfLayer, LayerType } from '@/types/layer'
+import type { TilesetType } from '@/types/tileset'
 
 export type ToolType =
   | 'addTile'
@@ -16,6 +17,8 @@ export type ToolType =
   | 'selectObject'
 
 export const useEditorStore = defineStore('editor', () => {
+  const tilesets = ref<TilesetType[]>([])
+
   const selectedTilesetId = ref<string | null>(null)
 
   const selectedTool = ref<ToolType | null>(null)
@@ -150,10 +153,22 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTilesetId.value = id
   }
 
+  function newTileset({ name, blob }: { name: string; blob: string }) {
+    const tileset: TilesetType = {
+      id: generateId(),
+      name,
+      blob,
+    }
+    tilesets.value.push(tileset)
+    return tileset
+  }
+
   return {
     /// Tilesets
+    tilesets,
     selectedTilesetId,
     selectTileset,
+    newTileset,
 
     /// Tools
     selectedTool,

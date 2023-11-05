@@ -11,8 +11,10 @@ const store = useEditorStore()
 store.$subscribe((mutation, state) => {
   // Need to clone the state because localforage doesn't like the Proxy objects
   const clonedFiles = JSON.parse(JSON.stringify(state.files))
+  const clonedTilesets = JSON.parse(JSON.stringify(state.tilesets))
 
   localforage.setItem('files', clonedFiles)
+  localforage.setItem('tilesets', clonedTilesets)
 })
 
 onMounted(() => {
