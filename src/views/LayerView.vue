@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Props as Item } from '@/components/ResourceList/ResourceItem.vue'
 import ResourceList from '@/components/ResourceList/ResourceList.vue'
 import ResourceItem from '@/components/ResourceList/ResourceItem.vue'
 import ToolBar from '@/components/ToolBar/ToolBar.vue'
@@ -26,7 +25,7 @@ function getIcon(type: TypeOfLayer) {
 </script>
 
 <template>
-  <div class="basis-1/4 h-full">
+  <div class="basis-1/4 w-1/4 flex flex-col">
     <ToolBar class="border-b">
       <ToolSection>
         <Tool
@@ -52,8 +51,8 @@ function getIcon(type: TypeOfLayer) {
         />
       </ToolSection>
     </ToolBar>
-    <div class="divide-y flex flex-col h-full">
-      <div class="p-2 basis-1/2 flex-grow overflow-y-auto">
+    <div class="divide-y flex flex-col overflow-hidden h-full">
+      <div class="p-2 basis-1/2 flex-grow overflow-y-auto flex-shrink-0">
         <ResourceList name="Layers" v-if="store.selectedFile">
           <ResourceItem
             v-for="layer in store.selectedFile.layers"

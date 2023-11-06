@@ -25,7 +25,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="canvasContainer" class="flex-grow bg-gray-100 overflow-hidden">
+  <div ref="canvasContainer" class="basis-1/2 shrink-0 bg-gray-100 overflow-hidden">
     <TileLayerToolBar v-if="store.selectedLayer?.type === 'tile'" />
     <StructureLayerToolBar v-if="store.selectedLayer?.type === 'structure'" />
     <ObjectLayerToolBar v-if="store.selectedLayer?.type === 'object'" />

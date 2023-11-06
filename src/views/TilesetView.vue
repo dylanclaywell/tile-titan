@@ -36,7 +36,7 @@ async function onChange(event: Event) {
 </script>
 
 <template>
-  <div class="basis-1/2 h-full flex-grow">
+  <div class="basis-1/2 flex-grow h-full overflow-hidden flex flex-col">
     <div>
       <ToolBar class="border-b">
         <ToolSection>
@@ -58,11 +58,11 @@ async function onChange(event: Event) {
         />
       </div>
     </div>
-    <div class="h-full">
-      <div key="{currentTileset.id}" class="relative h-full">
+    <div class="overflow-auto">
+      <div class="relative">
         <img
           class="max-w-none"
-          src="{currentTileset.blob}"
+          :src="store.selectedTileset?.blob ?? ''"
           alt="tileset"
           id="tileset"
           useMap="#tileset-map"

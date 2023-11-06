@@ -11,7 +11,7 @@ const store = useEditorStore()
 </script>
 
 <template>
-  <div class="basis-1/4">
+  <div class="basis-1/4 flex-shrink-0">
     <ToolBar class="border-b">
       <ToolSection>
         <Tool

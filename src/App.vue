@@ -26,7 +26,7 @@ onMounted(() => {
 
 <template>
   <router-view name="Toolbar" />
-  <div class="flex justify-between divide-x h-full">
+  <div class="flex justify-between divide-x flex-grow overflow-hidden">
     <router-view name="File" />
     <router-view name="Main" />
     <router-view name="Layer" />
