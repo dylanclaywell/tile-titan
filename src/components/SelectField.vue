@@ -19,7 +19,6 @@ const isOpen = ref(false)
 const root = ref<HTMLDivElement | null>(null)
 
 const selectedOption = computed(() => {
-  console.log(props.options, props.value)
   return props.options.find((option) => option.value === props.value)
 })
 

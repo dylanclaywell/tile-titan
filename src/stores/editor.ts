@@ -153,7 +153,6 @@ export const useEditorStore = defineStore('editor', () => {
 
   //////////////////// Tileset Actions ////////////////////
   function selectTileset(id: string | null) {
-    console.log(id)
     selectedTilesetId.value = id
   }
 
