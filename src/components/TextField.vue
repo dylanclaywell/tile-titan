@@ -9,6 +9,7 @@ export type Props = {
   helperText?: string
   readonly?: boolean
   rightIcon?: string
+  placeholder?: string
 }
 
 const props = defineProps<Props>()
@@ -29,6 +30,7 @@ const helperTextClass = `${props.hasError ? 'text-red-600' : 'text-gray-500'} te
         :name="props.name"
         :class="`border rounded-md p-2 w-full ${props.readonly ? 'cursor-default' : ''}`"
         :id="id"
+        :placeholder="props.placeholder"
       />
       <i
         v-if="props.rightIcon"

@@ -13,18 +13,18 @@ export type Props = {
 const props = defineProps<Props>()
 
 function del(event: Event) {
-  event.stopPropagation()
   props.onDelete?.()
+  event.stopPropagation()
 }
 
 function edit(event: Event) {
-  event.stopPropagation()
   props.onEdit?.()
+  event.stopPropagation()
 }
 
 function show(event: Event) {
-  event.stopPropagation()
   props.onShow?.()
+  event.stopPropagation()
 }
 </script>
 

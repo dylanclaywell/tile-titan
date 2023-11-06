@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 import SelectField from '@/components/SelectField.vue'
 import FileUploader from '@/components/FileUploader.vue'
@@ -8,18 +8,14 @@ import ToolSection from '@/components/ToolBar/ToolSection.vue'
 import { readFile } from '@/lib/readFile'
 import { useEditorStore } from '@/stores/editor'
 
-const options = [
-  {
-    value: '1',
-    label: 'Tileset 1',
-  },
-  {
-    value: '2',
-    label: 'Tileset 2',
-  },
-]
-
 const store = useEditorStore()
+
+const options = computed(() =>
+  store.tilesets.map((tileset) => ({
+    label: tileset.name,
+    value: tileset.id,
+  })),
+)
 
 async function onChange(event: Event) {
   if (!(event.target instanceof HTMLInputElement)) return
@@ -53,7 +49,13 @@ async function onChange(event: Event) {
         </ToolSection>
       </ToolBar>
       <div class="p-2 border-b">
-        <SelectField :options="options" :on-change="() => {}" value="1" />
+        <SelectField
+          :options="options"
+          :on-change="(value) => store.selectTileset(value)"
+          :value="store.selectedTileset?.id ?? ''"
+          label="Tileset"
+          placeholder="Select a tileset"
+        />
       </div>
     </div>
     <div class="h-full">

@@ -9,6 +9,8 @@ export type Props = {
   }[]
   onChange: (value: string) => void
   value: string
+  placeholder?: string
+  label?: string
 }
 
 const props = defineProps<Props>()
@@ -17,6 +19,7 @@ const isOpen = ref(false)
 const root = ref<HTMLDivElement | null>(null)
 
 const selectedOption = computed(() => {
+  console.log(props.options, props.value)
   return props.options.find((option) => option.value === props.value)
 })
 
@@ -50,11 +53,11 @@ onUnmounted(() => {
           : '[&_i]:rotate-0 [&_label]:border-b-0 [&_label]:rounded-bl-none [&_label]:rounded-br-none'
       }
     `"
-      label="Tileset"
+      :label="props.label ?? ''"
       :readonly="true"
-      placeholder="Select a tileset"
+      :placeholder="props.placeholder"
       @click="toggleOpen"
-      :value="selectedOption?.value"
+      :value="selectedOption?.label"
       rightIcon="chevron-down"
     />
     <menu

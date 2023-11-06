@@ -28,6 +28,9 @@ export const useEditorStore = defineStore('editor', () => {
   const selectedFileId = ref<string | null>(null)
   const files = ref<FileType[]>([])
 
+  const selectedTileset = computed(() => {
+    return tilesets.value.find((t) => t.id === selectedTilesetId.value)
+  })
   const selectedFile = computed(() => {
     return files.value.find((f) => f.id === selectedFileId.value)
   })
@@ -150,6 +153,7 @@ export const useEditorStore = defineStore('editor', () => {
 
   //////////////////// Tileset Actions ////////////////////
   function selectTileset(id: string | null) {
+    console.log(id)
     selectedTilesetId.value = id
   }
 
@@ -167,6 +171,7 @@ export const useEditorStore = defineStore('editor', () => {
     /// Tilesets
     tilesets,
     selectedTilesetId,
+    selectedTileset,
     selectTileset,
     newTileset,
 
