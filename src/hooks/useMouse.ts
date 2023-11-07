@@ -5,12 +5,14 @@ export function useMouse({ ref: componentRef }: { ref: Ref<HTMLElement | null> }
     buttons: {
       left: false,
       middle: false,
-      right: false
+      right: false,
     },
     x: 0,
     y: 0,
+    offsetX: 0,
+    offsetY: 0,
     previousX: 0,
-    previousY: 0
+    previousY: 0,
   })
 
   function handleMouseMove(event: MouseEvent) {
@@ -19,6 +21,9 @@ export function useMouse({ ref: componentRef }: { ref: Ref<HTMLElement | null> }
 
     state.value.x = event.pageX - (componentRef.value?.offsetLeft ?? 0)
     state.value.y = event.pageY - (componentRef.value?.offsetTop ?? 0)
+
+    state.value.offsetX = event.offsetX
+    state.value.offsetY = event.offsetY
   }
 
   function handleMouseDown(event: MouseEvent) {

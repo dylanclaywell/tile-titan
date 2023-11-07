@@ -30,6 +30,7 @@ onUnmounted(() => {
     <StructureLayerToolBar v-if="store.selectedLayer?.type === 'structure'" />
     <ObjectLayerToolBar v-if="store.selectedLayer?.type === 'object'" />
     <div ref="canvasContainer" class="relative h-full">
+      <div class="absolute top-0 left-0 w-full h-full"><img :src="store.selectedTile ?? ''" /></div>
       <FileCanvas
         :container-ref="canvasContainer"
         :container-view-mouse="canvasContainerMouse"

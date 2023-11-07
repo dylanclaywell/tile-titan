@@ -5,6 +5,7 @@ import localforage from 'localforage'
 import { useEditorStore } from './stores/editor'
 import { onMounted } from 'vue'
 import { File } from './types/file'
+import { Tileset } from './types/tileset'
 
 const store = useEditorStore()
 
@@ -17,10 +18,12 @@ store.$subscribe((mutation, state) => {
   localforage.setItem('tilesets', clonedTilesets)
 })
 
-onMounted(() => {
-  localforage.getItem('files').then((files) => {
-    store.setFiles(File.array().parse(files))
-  })
+onMounted(async () => {
+  const files = await localforage.getItem('files')
+  const tilesets = await localforage.getItem('tilesets')
+
+  store.setTilesets(Tileset.array().parse(tilesets))
+  store.setFiles(File.array().parse(files))
 })
 </script>
 

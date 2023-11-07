@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import SelectField from '@/components/SelectField.vue'
 import FileUploader from '@/components/FileUploader.vue'
+import TilesetCanvas from '@/components/TilesetCanvas.vue'
 import ToolBar from '@/components/ToolBar/ToolBar.vue'
 import ToolSection from '@/components/ToolBar/ToolSection.vue'
 import { readFile } from '@/lib/readFile'
 import { useEditorStore } from '@/stores/editor'
+import { useMouse } from '@/hooks/useMouse'
+import ToolButton from '@/components/ToolBar/ToolButton.vue'
 
 const store = useEditorStore()
 
@@ -47,6 +50,15 @@ async function onChange(event: Event) {
               <i className="fa-solid fa-file-circle-plus"></i></div
           ></FileUploader>
         </ToolSection>
+        <ToolSection>
+          <ToolButton
+            name="Delete tileset"
+            :is-disabled="!store.selectedTileset"
+            :is-selected="false"
+            icon="trash-can"
+            :on-click="() => store.deleteTileset(store.selectedTilesetId ?? '')"
+          />
+        </ToolSection>
       </ToolBar>
       <div class="p-2 border-b">
         <SelectField
@@ -55,32 +67,11 @@ async function onChange(event: Event) {
           :value="store.selectedTileset?.id ?? ''"
           label="Tileset"
           placeholder="Select a tileset"
+          no-results-message="No tilesets uploaded"
         />
       </div>
     </div>
-    <div class="overflow-auto">
-      <div class="relative">
-        <img
-          class="max-w-none"
-          :src="store.selectedTileset?.blob ?? ''"
-          alt="tileset"
-          id="tileset"
-          useMap="#tileset-map"
-        />
-        <div class="absolute bg-blue-600 z-40 pointer-events-none opacity-50">
-          <map name="tileset-map">
-            <area
-              onMouseDown="{handleAreaClick}"
-              shape="rect"
-              href="#"
-              alt="tile"
-              data-tileset-name="{currentTileset.name}"
-              data-tileset-id="{currentTileset.id}"
-            />
-          </map>
-        </div>
-      </div>
-    </div>
+    <TilesetCanvas v-if="store.selectedTileset" />
   </div>
 </template>
 

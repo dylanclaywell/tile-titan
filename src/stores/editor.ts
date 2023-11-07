@@ -28,8 +28,24 @@ export const useEditorStore = defineStore('editor', () => {
   const selectedFileId = ref<string | null>(null)
   const files = ref<FileType[]>([])
 
+  const selectedTile = ref<string | null>(null)
+
   const selectedTileset = computed(() => {
     return tilesets.value.find((t) => t.id === selectedTilesetId.value)
+  })
+  const selectedTilesetWidth = computed(() => {
+    if (!selectedTileset.value) return
+
+    const image = new Image()
+    image.src = selectedTileset.value.blob
+    return image.width
+  })
+  const selectedTilesetHeight = computed(() => {
+    if (!selectedTileset.value) return
+
+    const image = new Image()
+    image.src = selectedTileset.value.blob
+    return image.height
   })
   const selectedFile = computed(() => {
     return files.value.find((f) => f.id === selectedFileId.value)
@@ -166,6 +182,18 @@ export const useEditorStore = defineStore('editor', () => {
     return tileset
   }
 
+  function setTilesets(newTilesets: TilesetType[]) {
+    tilesets.value = newTilesets
+  }
+
+  function deleteTileset(id: string) {
+    tilesets.value = tilesets.value.filter((t) => t.id !== id)
+  }
+
+  function setTile(blob: string | null) {
+    selectedTile.value = blob
+  }
+
   return {
     /// Tilesets
     tilesets,
@@ -173,6 +201,12 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTileset,
     selectTileset,
     newTileset,
+    selectedTilesetWidth,
+    selectedTilesetHeight,
+    setTilesets,
+    deleteTileset,
+    selectedTile,
+    setTile,
 
     /// Tools
     selectedTool,
