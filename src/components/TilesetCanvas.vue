@@ -40,8 +40,14 @@ function drawCanvas() {
   const image = new Image()
   image.src = store.selectedTileset?.blob ?? ''
 
-  image.onload = () => {
+  image.onload = async () => {
     if (!tilesetCanvas.value || !cursorCanvas.value) return
+
+    tilesetCanvas.value.width = (await store.selectedTilesetWidth) ?? 0
+    tilesetCanvas.value.height = (await store.selectedTilesetHeight) ?? 0
+
+    cursorCanvas.value.width = (await store.selectedTilesetWidth) ?? 0
+    cursorCanvas.value.height = (await store.selectedTilesetHeight) ?? 0
 
     tilesetContext.clearRect(0, 0, tilesetCanvas.value.width, tilesetCanvas.value.height)
     cursorContext.clearRect(0, 0, cursorCanvas.value.width, cursorCanvas.value.height)
@@ -81,7 +87,11 @@ function onCanvasClick() {
     store.selectedFile.tileHeight,
   )
 
-  store.setTile(hiddenCanvas.value?.toDataURL() ?? '')
+  store.setTile({
+    width: store.selectedFile.tileWidth,
+    height: store.selectedFile.tileHeight,
+    blob: hiddenCanvas.value?.toDataURL() ?? '',
+  })
 }
 
 watch(selectedTileset, () => {
@@ -106,19 +116,14 @@ onUnmounted(() => {
 <template>
   <div class="overflow-auto">
     <div class="relative" ref="canvasContainerRef">
-      <canvas ref="hiddenCanvas" class="hidden"></canvas>
       <canvas
-        @click="onCanvasClick"
-        ref="tilesetCanvas"
-        :width="store.selectedTilesetWidth"
-        :height="store.selectedTilesetHeight"
+        ref="hiddenCanvas"
+        class="hidden"
+        :width="store.selectedFile?.tileWidth"
+        :height="store.selectedFile?.tileHeight"
       ></canvas>
-      <canvas
-        class="pointer-events-none absolute top-0 left-0"
-        ref="cursorCanvas"
-        :width="store.selectedTilesetWidth"
-        :height="store.selectedTilesetHeight"
-      ></canvas>
+      <canvas @click="onCanvasClick" ref="tilesetCanvas"></canvas>
+      <canvas class="pointer-events-none absolute top-0 left-0" ref="cursorCanvas"></canvas>
     </div>
   </div>
 </template>

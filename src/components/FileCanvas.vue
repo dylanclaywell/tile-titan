@@ -14,15 +14,17 @@ const props = defineProps<Props>()
 
 const store = useEditorStore()
 
+const container = ref<HTMLDivElement | null>(null)
 const canvas = ref<HTMLCanvasElement | null>(null)
-
+const canvasCursor = ref<HTMLDivElement | null>(null)
 const canvasMouse = useMouse({
   ref: canvas,
 })
 
 const canvasTop = computed(() => {
   const oldTop =
-    Number(canvas.value?.style?.top.split('px')[0]) || (props.containerRef?.clientHeight ?? 0) / 2
+    Number(container.value?.style?.top.split('px')[0]) ||
+    (props.containerRef?.clientHeight ?? 0) / 2
 
   const newTop =
     oldTop + props.containerViewMouse.state.value.y - props.containerViewMouse.state.value.previousY
@@ -33,7 +35,8 @@ const canvasTop = computed(() => {
 })
 const canvasLeftPx = computed(() => {
   const oldLeft =
-    Number(canvas.value?.style?.left.split('px')[0]) || (props.containerRef?.clientWidth ?? 0) / 2
+    Number(container.value?.style?.left.split('px')[0]) ||
+    (props.containerRef?.clientWidth ?? 0) / 2
   const newLeft =
     oldLeft +
     props.containerViewMouse.state.value.x -
@@ -81,6 +84,19 @@ watch(
   { deep: true },
 )
 
+watch(canvasMouse.state.value, () => {
+  if (!canvasCursor.value) return
+
+  const tileHeight = store.selectedFile?.tileHeight ?? 0
+  const tileWidth = store.selectedFile?.tileWidth ?? 0
+
+  const { absoluteX: x, absoluteY: y } = canvasMouse.state.value
+  const { x: offsetX, y: offsetY } = canvas.value?.getBoundingClientRect() ?? { x: 0, y: 0 }
+
+  canvasCursor.value.style.top = `${Math.floor((y - offsetY) / tileHeight) * tileHeight}px`
+  canvasCursor.value.style.left = `${Math.floor((x - offsetX) / tileWidth) * tileWidth}px`
+})
+
 onMounted(() => {
   drawCanvas()
 
@@ -93,11 +109,18 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <canvas
-    v-if="store.selectedFileId"
-    @click="drawCanvas"
-    ref="canvas"
+  <div
+    ref="container"
     class="border-r border-b border-gray-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
     :style="`top: ${canvasTop}; left: ${canvasLeftPx};`"
-  ></canvas>
+  >
+    <div ref="canvasCursor" class="absolute top-0 left-0 z-50">
+      <img
+        :src="store.selectedTile?.blob ?? ''"
+        :width="store.selectedFile?.tileWidth"
+        :height="store.selectedFile?.tileHeight"
+      />
+    </div>
+    <canvas v-if="store.selectedFileId" @click="drawCanvas" ref="canvas"> </canvas>
+  </div>
 </template>

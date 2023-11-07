@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed } from 'vue'
 
 import SelectField from '@/components/SelectField.vue'
 import FileUploader from '@/components/FileUploader.vue'
@@ -8,7 +8,6 @@ import ToolBar from '@/components/ToolBar/ToolBar.vue'
 import ToolSection from '@/components/ToolBar/ToolSection.vue'
 import { readFile } from '@/lib/readFile'
 import { useEditorStore } from '@/stores/editor'
-import { useMouse } from '@/hooks/useMouse'
 import ToolButton from '@/components/ToolBar/ToolButton.vue'
 
 const store = useEditorStore()

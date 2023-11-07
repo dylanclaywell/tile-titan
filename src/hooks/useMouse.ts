@@ -7,6 +7,8 @@ export function useMouse({ ref: componentRef }: { ref: Ref<HTMLElement | null> }
       middle: false,
       right: false,
     },
+    absoluteX: 0,
+    absoluteY: 0,
     x: 0,
     y: 0,
     offsetX: 0,
@@ -21,6 +23,9 @@ export function useMouse({ ref: componentRef }: { ref: Ref<HTMLElement | null> }
 
     state.value.x = event.pageX - (componentRef.value?.offsetLeft ?? 0)
     state.value.y = event.pageY - (componentRef.value?.offsetTop ?? 0)
+
+    state.value.absoluteX = event.clientX
+    state.value.absoluteY = event.clientY
 
     state.value.offsetX = event.offsetX
     state.value.offsetY = event.offsetY

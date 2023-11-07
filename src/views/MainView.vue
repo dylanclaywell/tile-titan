@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 import FileCanvas from '@/components/FileCanvas.vue'
 import TileLayerToolBar from '@/components/TileLayerToolBar.vue'
@@ -25,12 +25,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="canvasContainer" class="basis-1/2 shrink-0 bg-gray-100 overflow-hidden">
+  <div class="basis-1/2 shrink-0 bg-gray-100 overflow-hidden">
     <TileLayerToolBar v-if="store.selectedLayer?.type === 'tile'" />
     <StructureLayerToolBar v-if="store.selectedLayer?.type === 'structure'" />
     <ObjectLayerToolBar v-if="store.selectedLayer?.type === 'object'" />
     <div ref="canvasContainer" class="relative h-full">
-      <div class="absolute top-0 left-0 w-full h-full"><img :src="store.selectedTile ?? ''" /></div>
       <FileCanvas
         :container-ref="canvasContainer"
         :container-view-mouse="canvasContainerMouse"

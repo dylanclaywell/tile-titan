@@ -28,7 +28,11 @@ export const useEditorStore = defineStore('editor', () => {
   const selectedFileId = ref<string | null>(null)
   const files = ref<FileType[]>([])
 
-  const selectedTile = ref<string | null>(null)
+  const selectedTile = ref<{
+    width: number
+    height: number
+    blob: string
+  } | null>(null)
 
   const selectedTileset = computed(() => {
     return tilesets.value.find((t) => t.id === selectedTilesetId.value)
@@ -38,14 +42,24 @@ export const useEditorStore = defineStore('editor', () => {
 
     const image = new Image()
     image.src = selectedTileset.value.blob
-    return image.width
+
+    return new Promise<number>((resolve) => {
+      image.onload = () => {
+        return resolve(image.width)
+      }
+    })
   })
   const selectedTilesetHeight = computed(() => {
     if (!selectedTileset.value) return
 
     const image = new Image()
     image.src = selectedTileset.value.blob
-    return image.height
+
+    return new Promise<number>((resolve) => {
+      image.onload = () => {
+        return resolve(image.height)
+      }
+    })
   })
   const selectedFile = computed(() => {
     return files.value.find((f) => f.id === selectedFileId.value)
@@ -190,8 +204,8 @@ export const useEditorStore = defineStore('editor', () => {
     tilesets.value = tilesets.value.filter((t) => t.id !== id)
   }
 
-  function setTile(blob: string | null) {
-    selectedTile.value = blob
+  function setTile(tile: { width: number; height: number; blob: string }) {
+    selectedTile.value = tile
   }
 
   return {
