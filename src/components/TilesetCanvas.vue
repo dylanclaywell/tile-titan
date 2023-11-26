@@ -90,6 +90,8 @@ function onCanvasClick() {
   store.setTile({
     width: store.selectedFile.tileWidth,
     height: store.selectedFile.tileHeight,
+    tilesetX: mouseX.value,
+    tilesetY: mouseY.value,
     blob: hiddenCanvas.value?.toDataURL() ?? '',
   })
 }

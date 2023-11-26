@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch, defineProps } from 'vue'
 
+import TileCanvas from './TileCanvas.vue'
 import { useEditorStore } from '@/stores/editor'
 import { useMouse } from '@/hooks/useMouse'
 import colors from '@/colors'
@@ -14,17 +15,25 @@ const props = defineProps<Props>()
 
 const store = useEditorStore()
 
-const container = ref<HTMLDivElement | null>(null)
-const canvas = ref<HTMLCanvasElement | null>(null)
+const layerComponents = {
+  tile: TileCanvas,
+  object: '',
+  structure: '',
+}
+
+const grid = ref<HTMLCanvasElement | null>(null)
+const background = ref<HTMLCanvasElement | null>(null)
+const canvases = ref<HTMLCanvasElement[]>([])
+const root = ref<HTMLDivElement | null>(null)
+const canvasesContainer = ref<HTMLDivElement | null>(null)
 const canvasCursor = ref<HTMLDivElement | null>(null)
 const canvasMouse = useMouse({
-  ref: canvas,
+  ref: canvasesContainer,
 })
 
 const canvasTop = computed(() => {
   const oldTop =
-    Number(container.value?.style?.top.split('px')[0]) ||
-    (props.containerRef?.clientHeight ?? 0) / 2
+    Number(root.value?.style?.top.split('px')[0]) || (props.containerRef?.clientHeight ?? 0) / 2
 
   const newTop =
     oldTop + props.containerViewMouse.state.value.y - props.containerViewMouse.state.value.previousY
@@ -35,8 +44,7 @@ const canvasTop = computed(() => {
 })
 const canvasLeftPx = computed(() => {
   const oldLeft =
-    Number(container.value?.style?.left.split('px')[0]) ||
-    (props.containerRef?.clientWidth ?? 0) / 2
+    Number(root.value?.style?.left.split('px')[0]) || (props.containerRef?.clientWidth ?? 0) / 2
   const newLeft =
     oldLeft +
     props.containerViewMouse.state.value.x -
@@ -47,41 +55,75 @@ const canvasLeftPx = computed(() => {
   return `${value}px`
 })
 
-function drawCanvas() {
-  const context = canvas.value?.getContext('2d')
-
-  if (!context) return
-
-  // Changing the width or height of a canvas clears the canvas.
-  // To avoid race conditions, we'll set that property using the ref
-  // before we draw anything.
-  if (canvas.value) {
-    canvas.value.width = store.widthPx
-    canvas.value.height = store.heightPx
+// This function is intended to only be used when the canvas data is first loaded
+// or when the canvas is resized. This is because changing the size of the canvas
+// clears the canvas.
+function drawFullCanvas() {
+  if (grid.value) {
+    grid.value.width = store.widthPx
+    grid.value.height = store.heightPx
   }
 
-  context.clearRect(0, 0, store.widthPx, store.heightPx)
+  if (background.value) {
+    background.value.width = store.widthPx
+    background.value.height = store.heightPx
+  }
 
-  context.fillStyle = colors.gray[50]
-  context.fillRect(0, 0, store.widthPx, store.heightPx)
+  const backgroundContext = background.value?.getContext('2d')
+  if (!backgroundContext) return
 
-  context.fillStyle = colors.gray[300]
+  backgroundContext.fillStyle = colors.gray[50]
+  backgroundContext.fillRect(0, 0, store.widthPx, store.heightPx)
+
+  const gridContext = grid.value?.getContext('2d')
+  if (!gridContext) return
+
+  gridContext.fillStyle = colors.gray[300]
 
   for (let i = 0; i < store.widthPx; i += store.tileWidthPx) {
-    context.fillRect(i, 0, 1, store.heightPx)
+    gridContext.fillRect(i, 0, 1, store.heightPx)
   }
 
   for (let i = 0; i < store.heightPx; i += store.tileHeightPx) {
-    context.fillRect(0, i, store.widthPx, 1)
+    gridContext.fillRect(0, i, store.widthPx, 1)
   }
 }
 
+function drawFullCanvases() {
+  // canvases.value.forEach((canvas) => {
+  drawFullCanvas()
+  // })
+}
+
+function drawTile({ x, y, blob }: { x: number; y: number; blob: string }) {
+  if (!store.selectedTile) return
+
+  const canvas = canvases.value.find((canvas) => canvas.id === store.selectedLayerId)
+  if (!canvas) return
+
+  const tileHeight = store.selectedTile.width
+  const tileWidth = store.selectedTile.height
+
+  const context = canvas.getContext('2d')
+
+  if (!context) return
+
+  context.clearRect(x, y, tileWidth, tileHeight)
+
+  const image = new Image()
+
+  image.src = blob
+
+  image.onload = () => context.drawImage(image, x, y)
+}
+
 watch(
-  store,
-  () => {
-    drawCanvas()
-  },
-  { deep: true },
+  () => store.selectedFile?.width,
+  () => drawFullCanvases(),
+)
+watch(
+  () => store.selectedFile?.height,
+  () => drawFullCanvases(),
 )
 
 watch(canvasMouse.state.value, () => {
@@ -91,14 +133,17 @@ watch(canvasMouse.state.value, () => {
   const tileWidth = store.selectedFile?.tileWidth ?? 0
 
   const { absoluteX: x, absoluteY: y } = canvasMouse.state.value
-  const { x: offsetX, y: offsetY } = canvas.value?.getBoundingClientRect() ?? { x: 0, y: 0 }
+  const { x: offsetX, y: offsetY } = canvasesContainer.value?.getBoundingClientRect() ?? {
+    x: 0,
+    y: 0,
+  }
 
   canvasCursor.value.style.top = `${Math.floor((y - offsetY) / tileHeight) * tileHeight}px`
   canvasCursor.value.style.left = `${Math.floor((x - offsetX) / tileWidth) * tileWidth}px`
 })
 
 onMounted(() => {
-  drawCanvas()
+  drawFullCanvases()
 
   canvasMouse.register()
 })
@@ -110,17 +155,30 @@ onUnmounted(() => {
 
 <template>
   <div
-    ref="container"
+    ref="root"
     class="border-r border-b border-gray-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-    :style="`top: ${canvasTop}; left: ${canvasLeftPx};`"
+    :style="`top: ${canvasTop}; left: ${canvasLeftPx}; width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
   >
-    <div ref="canvasCursor" class="absolute top-0 left-0 z-50">
+    <div ref="canvasCursor" class="absolute top-0 left-0 z-50 pointer-events-none">
       <img
         :src="store.selectedTile?.blob ?? ''"
         :width="store.selectedFile?.tileWidth"
         :height="store.selectedFile?.tileHeight"
       />
     </div>
-    <canvas v-if="store.selectedFileId" @click="drawCanvas" ref="canvas"> </canvas>
+    <div
+      ref="canvasesContainer"
+      class="absolute pointer-events-none"
+      :style="`width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
+    >
+      <canvas class="absolute top-0 left-0 z-50" ref="grid"></canvas>
+      <component
+        v-for="layer in store.selectedFile?.layers"
+        :key="layer.id"
+        :is="layerComponents[layer.type]"
+        :id="layer.id"
+      ></component>
+      <canvas class="absolute top-0 left-0 -z-10" ref="background"></canvas>
+    </div>
   </div>
 </template>

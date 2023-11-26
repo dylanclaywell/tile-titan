@@ -5,6 +5,8 @@ import { v4 as generateId } from 'uuid'
 import type { FileType } from '@/types/file'
 import type { TypeOfLayer as TypeOfLayer, LayerType } from '@/types/layer'
 import type { TilesetType } from '@/types/tileset'
+import type { TileDataType } from '@/types/tilemap'
+import { generateMap } from '@/utils/generateMap'
 
 export type ToolType =
   | 'addTile'
@@ -15,6 +17,14 @@ export type ToolType =
   | 'addObject'
   | 'removeObject'
   | 'selectObject'
+
+export type SelectedTile = {
+  width: number
+  height: number
+  tilesetX: number
+  tilesetY: number
+  blob: string
+}
 
 export const useEditorStore = defineStore('editor', () => {
   const tilesets = ref<TilesetType[]>([])
@@ -28,11 +38,7 @@ export const useEditorStore = defineStore('editor', () => {
   const selectedFileId = ref<string | null>(null)
   const files = ref<FileType[]>([])
 
-  const selectedTile = ref<{
-    width: number
-    height: number
-    blob: string
-  } | null>(null)
+  const selectedTile = ref<SelectedTile | null>(null)
 
   const selectedTileset = computed(() => {
     return tilesets.value.find((t) => t.id === selectedTilesetId.value)
@@ -125,14 +131,28 @@ export const useEditorStore = defineStore('editor', () => {
     const file = selectedFile.value
 
     if (file) {
-      const layer: LayerType = {
-        id: generateId(),
-        name: 'New Layer',
-        type,
-        isVisible: true,
-        sortOrder: file.layers.length + 1,
-        data: [],
-      }
+      const layer: LayerType = (() => {
+        switch (type) {
+          case 'tile':
+            return {
+              id: generateId(),
+              name: 'New Layer',
+              type,
+              isVisible: true,
+              sortOrder: file.layers.length + 1,
+              data: generateMap(file.width, file.height),
+            }
+          default:
+            return {
+              id: generateId(),
+              name: 'New Layer',
+              type,
+              isVisible: true,
+              sortOrder: file.layers.length + 1,
+              data: [],
+            }
+        }
+      })()
 
       file.layers.push(layer)
       return layer
@@ -204,7 +224,7 @@ export const useEditorStore = defineStore('editor', () => {
     tilesets.value = tilesets.value.filter((t) => t.id !== id)
   }
 
-  function setTile(tile: { width: number; height: number; blob: string }) {
+  function setTile(tile: SelectedTile | null) {
     selectedTile.value = tile
   }
 
