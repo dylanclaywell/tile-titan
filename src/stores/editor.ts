@@ -5,7 +5,6 @@ import { v4 as generateId } from 'uuid'
 import type { FileType } from '@/types/file'
 import type { TypeOfLayer as TypeOfLayer, LayerType } from '@/types/layer'
 import type { TilesetType } from '@/types/tileset'
-import type { TileDataType } from '@/types/tilemap'
 import { generateMap } from '@/utils/generateMap'
 
 export type ToolType =
@@ -228,6 +227,16 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTile.value = tile
   }
 
+  function reset() {
+    tilesets.value = []
+    selectedTilesetId.value = null
+    selectedTool.value = null
+    selectedLayerId.value = null
+    selectedFileId.value = null
+    files.value = []
+    selectedTile.value = null
+  }
+
   return {
     /// Tilesets
     tilesets,
@@ -267,5 +276,8 @@ export const useEditorStore = defineStore('editor', () => {
     selectLayer,
     deleteLayer,
     toggleLayerVisibility,
+
+    // Reset
+    reset,
   }
 })
