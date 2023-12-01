@@ -12,7 +12,7 @@ const Form = z.object({
   height: z.string().transform(zodStringToNumber),
   tileWidth: z.string().transform(zodStringToNumber),
   tileHeight: z.string().transform(zodStringToNumber),
-  isStructure: z.string().optional().transform(zodCheckboxValueToBoolean)
+  isStructure: z.string().optional().transform(zodCheckboxValueToBoolean),
 })
 
 type FormType = z.infer<typeof Form>
@@ -107,6 +107,10 @@ onUnmounted(() => {
       :has-error="Boolean(errors.tileHeight)"
       :helper-text="errors.tileHeight"
     />
+    <label class="flex items-center gap-2">
+      <input type="checkbox" />
+      <span class="text-gray-700">Is Structure</span>
+    </label>
   </form>
 </template>
 
