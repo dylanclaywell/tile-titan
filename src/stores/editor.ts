@@ -39,6 +39,8 @@ export const useEditorStore = defineStore('editor', () => {
 
   const selectedTile = ref<SelectedTile | null>(null)
 
+  const showGrid = ref(true)
+
   const selectedTileset = computed(() => {
     return tilesets.value.find((t) => t.id === selectedTilesetId.value)
   })
@@ -191,12 +193,18 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   //////////////////// Tool Actions ////////////////////
+  // `selectTool` is used to toggle the tool on and off
   function selectTool(tool: ToolType) {
     if (selectedTool.value === tool) {
       selectedTool.value = null
       return
     }
 
+    selectedTool.value = tool
+  }
+
+  // `setTool` is used to set the tool without toggling it
+  function setTool(tool: ToolType) {
     selectedTool.value = tool
   }
 
@@ -227,6 +235,14 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTile.value = tile
   }
 
+  //////////////////// Miscellaneous Actions ////////////////////
+
+  function toggleGrid() {
+    showGrid.value = !showGrid.value
+  }
+
+  function resetView() {}
+
   function reset() {
     tilesets.value = []
     selectedTilesetId.value = null
@@ -254,6 +270,7 @@ export const useEditorStore = defineStore('editor', () => {
     /// Tools
     selectedTool,
     selectTool,
+    setTool,
 
     /// Files
     files,
@@ -277,7 +294,9 @@ export const useEditorStore = defineStore('editor', () => {
     deleteLayer,
     toggleLayerVisibility,
 
-    // Reset
+    // Miscellaneous
+    toggleGrid,
+    showGrid,
     reset,
   }
 })

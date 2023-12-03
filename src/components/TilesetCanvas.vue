@@ -94,6 +94,10 @@ function onCanvasClick() {
     tilesetY: mouseY.value,
     blob: hiddenCanvas.value?.toDataURL() ?? '',
   })
+
+  if (store.selectedLayer?.type === 'tile') {
+    store.setTool('addTile')
+  }
 }
 
 watch(selectedTileset, () => {

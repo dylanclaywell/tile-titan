@@ -5,6 +5,7 @@ import TileCanvas from './TileCanvas.vue'
 import { useEditorStore } from '@/stores/editor'
 import { useMouse } from '@/hooks/useMouse'
 import colors from '@/colors'
+import { eventEmitter } from '@/events'
 
 export type Props = {
   containerViewMouse: ReturnType<typeof useMouse>
@@ -42,7 +43,7 @@ const canvasTop = computed(() => {
 
   return `${value}px`
 })
-const canvasLeftPx = computed(() => {
+const canvasLeft = computed(() => {
   const oldLeft =
     Number(root.value?.style?.left.split('px')[0]) || (props.containerRef?.clientWidth ?? 0) / 2
   const newLeft =
@@ -80,41 +81,17 @@ function drawFullCanvas() {
 
   gridContext.fillStyle = colors.gray[300]
 
-  for (let i = 0; i < store.widthPx; i += store.tileWidthPx) {
+  for (let i = store.tileWidthPx; i < store.widthPx; i += store.tileWidthPx) {
     gridContext.fillRect(i, 0, 1, store.heightPx)
   }
 
-  for (let i = 0; i < store.heightPx; i += store.tileHeightPx) {
+  for (let i = store.tileHeightPx; i < store.heightPx; i += store.tileHeightPx) {
     gridContext.fillRect(0, i, store.widthPx, 1)
   }
 }
 
 function drawFullCanvases() {
-  // canvases.value.forEach((canvas) => {
   drawFullCanvas()
-  // })
-}
-
-function drawTile({ x, y, blob }: { x: number; y: number; blob: string }) {
-  if (!store.selectedTile) return
-
-  const canvas = canvases.value.find((canvas) => canvas.id === store.selectedLayerId)
-  if (!canvas) return
-
-  const tileHeight = store.selectedTile.width
-  const tileWidth = store.selectedTile.height
-
-  const context = canvas.getContext('2d')
-
-  if (!context) return
-
-  context.clearRect(x, y, tileWidth, tileHeight)
-
-  const image = new Image()
-
-  image.src = blob
-
-  image.onload = () => context.drawImage(image, x, y)
 }
 
 watch(
@@ -151,19 +128,32 @@ onMounted(() => {
 onUnmounted(() => {
   canvasMouse.unregister()
 })
+
+eventEmitter.on('reset-view', () => {
+  if (!root.value) return
+
+  root.value.style.top = ''
+  root.value.style.left = ''
+})
 </script>
 
 <template>
   <div
     ref="root"
     class="border-r border-b border-gray-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-    :style="`top: ${canvasTop}; left: ${canvasLeftPx}; width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
+    :style="`top: ${canvasTop}; left: ${canvasLeft}; width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
   >
     <div ref="canvasCursor" class="absolute top-0 left-0 z-50 pointer-events-none">
       <img
+        v-if="store.selectedLayer?.type === 'tile'"
         :src="store.selectedTile?.blob ?? ''"
-        :width="store.selectedFile?.tileWidth"
-        :height="store.selectedFile?.tileHeight"
+        :width="store.selectedFile?.tileWidth ?? store.selectedFile?.tileWidth"
+        :height="store.selectedFile?.tileHeight ?? store.selectedFile?.tileHeight"
+        :class="{
+          'bg-blue-400': store.selectedTool === 'addTile',
+          'bg-red-400': store.selectedTool === 'removeTile',
+          'z-50 opacity-50': true,
+        }"
       />
     </div>
     <div
@@ -171,14 +161,14 @@ onUnmounted(() => {
       class="absolute pointer-events-none"
       :style="`width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
     >
-      <canvas class="absolute top-0 left-0 z-50" ref="grid"></canvas>
+      <canvas class="absolute top-0 left-0 z-50" ref="grid" v-show="store.showGrid"></canvas>
       <component
         v-for="layer in store.selectedFile?.layers"
         :key="layer.id"
         :is="layerComponents[layer.type]"
         :id="layer.id"
       ></component>
-      <canvas class="absolute top-0 left-0 -z-10" ref="background"></canvas>
+      <canvas class="absolute top-0 left-0 -z-10 shadow" ref="background"></canvas>
     </div>
   </div>
 </template>

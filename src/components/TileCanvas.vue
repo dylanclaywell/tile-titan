@@ -74,7 +74,27 @@ function drawTile({ x, y, blob }: { x: number; y: number; blob: string }) {
   image.onload = () => context.drawImage(image, x, y)
 }
 
+function clearTile({ x, y }: { x: number; y: number }) {
+  // If there is no selected file, something has gone wrong.
+  if (!store.selectedFile) return
+
+  if (!canvas.value) return
+
+  const tileHeight = store.selectedFile.tileHeight
+  const tileWidth = store.selectedFile.tileWidth
+
+  const context = canvas.value.getContext('2d')
+
+  if (!context) return
+
+  context.clearRect(x, y, tileWidth, tileHeight)
+}
+
 function onCanvasClick() {
+  // This component only supports tile clicking - if the selected layer
+  // isn't a tile layer, something has gone wrong.
+  if (store.selectedLayer?.type !== 'tile') return
+
   if (!store.selectedFile) return
 
   const tileHeight = store.selectedFile?.tileHeight ?? 0
@@ -85,7 +105,7 @@ function onCanvasClick() {
   const tileX = Math.floor(offsetX / tileWidth)
   const tileY = Math.floor(offsetY / tileHeight)
 
-  if (store.selectedLayer?.type === 'tile') {
+  if (store.selectedTool === 'addTile') {
     store.selectedLayer.data[tileY][tileX] = {
       tilesetId: store.selectedTileset?.id ?? '',
       tilesetName: store.selectedTileset?.name ?? '',
@@ -99,7 +119,29 @@ function onCanvasClick() {
       y: tileY * tileHeight,
       blob: store.selectedTile?.blob ?? '',
     })
+  } else if (store.selectedTool === 'removeTile') {
+    store.selectedLayer.data[tileY][tileX] = {
+      tilesetId: '',
+      tilesetName: '',
+      tilesetX: -1,
+      tilesetY: -1,
+      tileData: '',
+    }
+
+    clearTile({
+      x: tileX * tileWidth,
+      y: tileY * tileHeight,
+    })
   }
+}
+
+function onCanvasMouseMove(event: Event) {
+  if (!(event instanceof MouseEvent)) return
+  const leftMouseDown = event.buttons === 1
+
+  if (!leftMouseDown) return
+
+  onCanvasClick()
 }
 
 watch(
@@ -132,5 +174,6 @@ onUnmounted(() => {
     ref="canvas"
     :id="props.id"
     @click="onCanvasClick"
+    @mousemove="onCanvasMouseMove"
   ></canvas>
 </template>
