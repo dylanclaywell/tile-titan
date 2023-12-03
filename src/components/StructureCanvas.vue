@@ -17,9 +17,7 @@ const canvasMouse = useMouse({
 })
 
 function drawFullCanvas() {
-  if (!canvas.value) return
-
-  const context = canvas.value.getContext('2d')
+  const context = canvas.value?.getContext('2d')
 
   if (!context) return
 
@@ -34,32 +32,33 @@ function drawFullCanvas() {
   context.clearRect(0, 0, store.widthPx, store.heightPx)
 
   const layer = store.selectedFile?.layers.find((layer) => layer.id === props.id)
-  if (!layer || layer.type !== 'tile') return
+  if (!layer || layer.type !== 'structure') return
 
-  drawTileLayerToCanvas({
-    layer,
-    canvas: canvas.value,
-    tileWidth: store.selectedFile?.tileWidth ?? 0,
-    tileHeight: store.selectedFile?.tileHeight ?? 0,
+  layer.data.forEach((structure) => {
+    const image = new Image()
+
+    const structureFile = store.files.find((file) => file.id === structure.fileId)
+
+    const canvas = document.createElement('canvas')
+    canvas.width = structureFile?.width ?? 0
+    canvas.height = structureFile?.height ?? 0
+
+    for (const layer of structureFile?.layers ?? []) {
+      if (layer.type !== 'tile') continue
+      drawTileLayerToCanvas({
+        layer,
+        canvas,
+        tileWidth: structureFile?.tileWidth ?? 0,
+        tileHeight: structureFile?.tileHeight ?? 0,
+      })
+    }
+
+    image.src = canvas.toDataURL() ?? ''
+
+    image.onload = () => {
+      context.drawImage(image, structure.x, structure.y)
+    }
   })
-
-  // layer.data.forEach((row, y) => {
-  //   row.forEach((tile, x) => {
-  //     if (!tile) return
-
-  //     const image = new Image()
-
-  //     image.src = tile.tileData ?? ''
-
-  //     image.onload = () => {
-  //       context.drawImage(
-  //         image,
-  //         x * (store.selectedFile?.tileWidth ?? 0),
-  //         y * (store.selectedFile?.tileHeight ?? 0),
-  //       )
-  //     }
-  //   })
-  // })
 }
 
 function drawTile({ x, y, blob }: { x: number; y: number; blob: string }) {
