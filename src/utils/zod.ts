@@ -5,14 +5,14 @@ export function zodStringToNumber(value: string, context: z.RefinementCtx) {
   if (isNaN(parsedValue)) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'Not a number'
+      message: 'Not a number',
     })
     return z.NEVER
   }
   if (parsedValue < 0) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
-      message: 'Number must be positive'
+      message: 'Number must be positive',
     })
     return z.NEVER
   }

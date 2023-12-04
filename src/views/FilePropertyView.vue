@@ -51,13 +51,17 @@ function submit(event: Event) {
   }
 }
 
+function submitForm() {
+  const form = document.activeElement?.closest('form')
+
+  if (form instanceof HTMLFormElement && form.id === 'file-properties') {
+    form.requestSubmit()
+  }
+}
+
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter') {
-    const form = document.activeElement?.closest('form')
-
-    if (form instanceof HTMLFormElement && form.id === 'file-properties') {
-      form.requestSubmit()
-    }
+    submitForm()
   }
 }
 
@@ -71,7 +75,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <form id="file-properties" class="space-y-4 p-4 border-t" @submit="submit">
+  <form
+    id="file-properties"
+    class="space-y-4 p-4 border-t basis-1/2 overflow-y-auto flex-shrink-0 flex-grow"
+    @submit="submit"
+  >
     <TextField
       :value="store.selectedFile?.name"
       name="name"
@@ -108,8 +116,13 @@ onUnmounted(() => {
       :helper-text="errors.tileHeight"
     />
     <label class="flex items-center gap-2">
-      <input type="checkbox" />
-      <span class="text-gray-700">Is Structure</span>
+      <input
+        name="isStructure"
+        type="checkbox"
+        :checked="store.selectedFile?.isStructure"
+        @change="submitForm"
+      />
+      <span class="text-gray-700 select-none">Is Structure</span>
     </label>
   </form>
 </template>

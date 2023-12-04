@@ -18,7 +18,6 @@ function selectRemoveTile() {
 }
 
 function resetView() {
-  console.log('reset view')
   eventEmitter.emit('reset-view')
 }
 </script>

@@ -11,7 +11,7 @@ const store = useEditorStore()
 </script>
 
 <template>
-  <div class="basis-1/4 flex-shrink-0">
+  <div class="basis-1/4 flex flex-col">
     <ToolBar class="border-b">
       <ToolSection>
         <Tool
@@ -23,20 +23,22 @@ const store = useEditorStore()
         />
       </ToolSection>
     </ToolBar>
-    <div class="p-2">
-      <ResourceList name="Files">
-        <ResourceItem
-          v-for="file in store.files"
-          :key="file.id"
-          :name="file.name"
-          :is-selected="store.selectedFileId === file.id"
-          :id="file.id"
-          @click="() => store.selectFile(file.id)"
-          :on-delete="() => store.deleteFile(file.id)"
-        />
-      </ResourceList>
+    <div class="overflow-hidden flex flex-col flex-grow">
+      <div class="p-2 basis-1/2 overflow-y-auto flex-grow flex-shrink-0">
+        <ResourceList name="Files">
+          <ResourceItem
+            v-for="file in store.files"
+            :key="file.id"
+            :name="file.name"
+            :is-selected="store.selectedFileId === file.id"
+            :id="file.id"
+            @click="() => store.selectFile(file.id)"
+            :on-delete="() => store.deleteFile(file.id)"
+          />
+        </ResourceList>
+      </div>
+      <FilePropertyView v-if="store.selectedFileId" />
     </div>
-    <FilePropertyView v-if="store.selectedFileId" />
   </div>
 </template>
 

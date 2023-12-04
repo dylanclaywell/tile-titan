@@ -32,6 +32,8 @@ export const useEditorStore = defineStore('editor', () => {
 
   const selectedTool = ref<ToolType | null>(null)
 
+  const selectedStructureId = ref<string | null>(null)
+
   const selectedLayerId = ref<string | null>(null)
 
   const selectedFileId = ref<string | null>(null)
@@ -94,6 +96,7 @@ export const useEditorStore = defineStore('editor', () => {
       file.height = newFile.height
       file.tileWidth = newFile.tileWidth
       file.tileHeight = newFile.tileHeight
+      file.isStructure = newFile.isStructure
     }
   }
 
@@ -208,6 +211,11 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTool.value = tool
   }
 
+  //////////////////// Structure Actions ////////////////////
+  function selectStructure(id: string | null) {
+    selectedStructureId.value = id
+  }
+
   //////////////////// Tileset Actions ////////////////////
   function selectTileset(id: string | null) {
     selectedTilesetId.value = id
@@ -294,7 +302,11 @@ export const useEditorStore = defineStore('editor', () => {
     deleteLayer,
     toggleLayerVisibility,
 
-    // Miscellaneous
+    /// Structures
+    selectedStructureId,
+    selectStructure,
+
+    /// Miscellaneous
     toggleGrid,
     showGrid,
     reset,

@@ -7,6 +7,7 @@ import Tool from '@/components/ToolBar/ToolButton.vue'
 import { useEditorStore } from '@/stores/editor'
 import type { TypeOfLayer } from '@/types/layer'
 import TilesetView from './TilesetView.vue'
+import StructureView from './StructureView.vue'
 
 const store = useEditorStore()
 
@@ -68,7 +69,8 @@ function getIcon(type: TypeOfLayer) {
           />
         </ResourceList>
       </div>
-      <TilesetView v-if="store.selectedLayer" />
+      <TilesetView v-if="store.selectedLayer?.type === 'tile'" />
+      <StructureView v-if="store.selectedLayer?.type === 'structure'" />
     </div>
   </div>
 </template>
