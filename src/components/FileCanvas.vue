@@ -6,6 +6,7 @@ import { useEditorStore } from '@/stores/editor'
 import { useMouse } from '@/hooks/useMouse'
 import colors from '@/colors'
 import { eventEmitter } from '@/events'
+import StructureCanvas from './StructureCanvas.vue'
 
 export type Props = {
   containerViewMouse: ReturnType<typeof useMouse>
@@ -19,7 +20,7 @@ const store = useEditorStore()
 const layerComponents = {
   tile: TileCanvas,
   object: '',
-  structure: '',
+  structure: StructureCanvas,
 }
 
 const grid = ref<HTMLCanvasElement | null>(null)

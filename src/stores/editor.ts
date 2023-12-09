@@ -216,6 +216,35 @@ export const useEditorStore = defineStore('editor', () => {
     selectedStructureId.value = id
   }
 
+  function addStructure({ id, x, y }: { id: string; x: number; y: number }) {
+    const file = selectedFile.value
+
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'structure') {
+        layer.data.push({
+          id: generateId(),
+          fileId: id,
+          x,
+          y,
+        })
+      }
+    }
+  }
+
+  function removeStructure(id: string) {
+    const file = selectedFile.value
+
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'structure') {
+        layer.data = layer.data.filter((s) => s.id !== id)
+      }
+    }
+  }
+
   //////////////////// Tileset Actions ////////////////////
   function selectTileset(id: string | null) {
     selectedTilesetId.value = id
@@ -305,6 +334,8 @@ export const useEditorStore = defineStore('editor', () => {
     /// Structures
     selectedStructureId,
     selectStructure,
+    addStructure,
+    removeStructure,
 
     /// Miscellaneous
     toggleGrid,

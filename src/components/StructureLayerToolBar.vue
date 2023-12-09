@@ -2,14 +2,37 @@
 import ToolBar from '@/components/ToolBar/ToolBar.vue'
 import ToolButton from '@/components/ToolBar/ToolButton.vue'
 import ToolSection from '@/components/ToolBar/ToolSection.vue'
+import { useEditorStore } from '@/stores/editor'
+
+const store = useEditorStore()
+
+function selectAddStructure() {
+  store.selectTool('addStructure')
+}
+
+function selectRemoveStructure() {
+  store.selectTool('removeStructure')
+}
 </script>
 
 <template>
   <ToolBar class="bg-white border-b relative z-10">
     <ToolSection>
       <ToolButton name="Select" icon="arrow-pointer" :is-disabled="false" :is-selected="false" />
-      <ToolButton name="Add" icon="cubes" :is-disabled="false" :is-selected="false" />
-      <ToolButton name="Erase" icon="eraser" :is-disabled="false" :is-selected="false" />
+      <ToolButton
+        name="Add"
+        icon="cubes"
+        :is-disabled="false"
+        :is-selected="store.selectedTool === 'addStructure'"
+        :on-click="selectAddStructure"
+      />
+      <ToolButton
+        name="Erase"
+        icon="eraser"
+        :is-disabled="false"
+        :is-selected="store.selectedTool === 'removeStructure'"
+        :on-click="selectRemoveStructure"
+      />
     </ToolSection>
   </ToolBar>
 </template>
