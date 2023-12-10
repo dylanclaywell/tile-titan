@@ -15,8 +15,6 @@ const canvas = ref<HTMLCanvasElement | null>(null)
 const canvasMouse = useMouse({
   ref: canvas,
 })
-const currentHoveredStructures = ref<string[]>([])
-const previousHoveredStructures = ref<string[]>([])
 
 function drawFullCanvas() {
   window.requestAnimationFrame(() => {
@@ -55,42 +53,6 @@ function drawFullCanvas() {
       })
     })
   })
-}
-
-function drawTile({ x, y, blob }: { x: number; y: number; blob: string }) {
-  if (!store.selectedTile) return
-  if (!canvas.value) return
-
-  const tileHeight = store.selectedTile.width
-  const tileWidth = store.selectedTile.height
-
-  const context = canvas.value.getContext('2d')
-
-  if (!context) return
-
-  context.clearRect(x, y, tileWidth, tileHeight)
-
-  const image = new Image()
-
-  image.src = blob
-
-  image.onload = () => context.drawImage(image, x, y)
-}
-
-function clearTile({ x, y }: { x: number; y: number }) {
-  // If there is no selected file, something has gone wrong.
-  if (!store.selectedFile) return
-
-  if (!canvas.value) return
-
-  const tileHeight = store.selectedFile.tileHeight
-  const tileWidth = store.selectedFile.tileWidth
-
-  const context = canvas.value.getContext('2d')
-
-  if (!context) return
-
-  context.clearRect(x, y, tileWidth, tileHeight)
 }
 
 function getExistingStructuresAtPosition({ x, y }: { x: number; y: number }) {
@@ -137,44 +99,14 @@ function clearStructure({ x, y }: { x: number; y: number }) {
 
     if (!structureFile) return
 
-    const width = structureFile.width * structureFile.tileWidth
-    const height = structureFile.height * structureFile.tileHeight
-
     const context = canvas.value.getContext('2d')
 
     if (!context) return
 
-    context.clearRect(structure.x, structure.y, width, height)
     store.removeStructure(structure.id)
-
-    // Now get all the tile positions of the structure and redraw any tiles that overlap this structure
-    const tiles = []
-    for (let i = 0; i < structureFile.width; i++) {
-      for (let j = 0; j < structureFile.height; j++) {
-        tiles.push({
-          x: structure.x + i * structureFile.tileWidth,
-          y: structure.y + j * structureFile.tileHeight,
-        })
-      }
-    }
-
-    for (const tile of tiles) {
-      const tileStructure = getExistingStructuresAtPosition({ x: tile.x, y: tile.y })
-
-      for (const structure of tileStructure) {
-        const structureFile = store.files.find((file) => file.id === structure.fileId)
-
-        if (structureFile && !clickedStructures.includes(structure)) {
-          drawStructureFromFile({
-            x: structure.x,
-            y: structure.y,
-            structureFile,
-            canvas: canvas.value,
-          })
-        }
-      }
-    }
   }
+
+  if (clickedStructures.length > 0) drawFullCanvas()
 }
 
 function onCanvasClick() {
@@ -195,20 +127,26 @@ function onCanvasClick() {
   const tileY = Math.floor(offsetY / tileHeight)
 
   if (store.selectedTool === 'addStructure') {
-    const clickedStructures = getExistingStructuresAtPosition({ x: offsetX, y: offsetY })
-
-    if (clickedStructures.length > 0) return
-
     const structureFile = store.files.find((file) => file.id === store.selectedStructureId)
-
     if (!structureFile) return
 
-    drawStructureFromFile({
-      x: tileX * tileWidth,
-      y: tileY * tileHeight,
-      structureFile,
-      canvas: canvas.value,
-    })
+    for (
+      let y = offsetY;
+      y < offsetY + structureFile.height * structureFile.tileHeight;
+      y += structureFile.tileHeight
+    ) {
+      for (
+        let x = offsetX;
+        x < offsetX + structureFile.width * structureFile.tileWidth;
+        x += structureFile.tileWidth
+      ) {
+        const existingStructures = getExistingStructuresAtPosition({ x, y })
+
+        if (existingStructures.length > 0) return
+      }
+    }
+
+    drawFullCanvas()
 
     store.addStructure({
       x: tileX * tileWidth,
@@ -220,109 +158,12 @@ function onCanvasClick() {
       x: tileX * tileWidth,
       y: tileY * tileHeight,
     })
-    // redrawOtherStructures()
   }
-}
-
-function drawHoverRectangles() {
-  const newHoveredStructures = getExistingStructuresAtPosition({
-    x: canvasMouse.state.value.offsetX,
-    y: canvasMouse.state.value.offsetY,
-  }).map((structure) => structure.id)
-
-  const previousHoveredStructures: string[] = []
-
-  for (const hoveredStructure of currentHoveredStructures.value) {
-    if (!newHoveredStructures.includes(hoveredStructure)) {
-      previousHoveredStructures.push(hoveredStructure)
-    }
-  }
-
-  // draw hover rectangle on all new hovered structures and remove hover rectangle from all previous hovered structures (redrawing the structure)
-  for (const hoveredStructure of newHoveredStructures.filter(
-    (hoveredStructure) => !currentHoveredStructures.value.includes(hoveredStructure),
-  )) {
-    if (!previousHoveredStructures.includes(hoveredStructure)) {
-      if (store.selectedLayer?.type !== 'structure') continue
-      const structure = store.selectedLayer.data.find(
-        (structure) => structure.id === hoveredStructure,
-      )
-
-      if (!structure) continue
-
-      const structureFile = store.files.find((file) => file.id === structure.fileId)
-
-      if (!structureFile) continue
-
-      window.requestAnimationFrame(() => {
-        const context = canvas.value?.getContext('2d')
-
-        if (!context) return
-
-        // translucent blue if tool is selectStructure, translucent red if tool is removeStructure
-        context.fillStyle =
-          store.selectedTool === 'selectStructure' ? 'rgba(0, 0, 255,0.3)' : 'rgba(255, 0, 0,0.3)'
-        context.fillRect(
-          structure.x,
-          structure.y,
-          structureFile.width * structureFile.tileWidth,
-          structureFile.height * structureFile.tileHeight,
-        )
-      })
-    }
-  }
-
-  for (const hoveredStructure of previousHoveredStructures.filter(
-    (hoveredStructure) => !newHoveredStructures.includes(hoveredStructure),
-  )) {
-    if (!canvas.value) continue
-
-    if (!newHoveredStructures.includes(hoveredStructure)) {
-      if (store.selectedLayer?.type !== 'structure') continue
-      const structure = store.selectedLayer.data.find(
-        (structure) => structure.id === hoveredStructure,
-      )
-
-      if (!structure) continue
-
-      const structureFile = store.files.find((file) => file.id === structure.fileId)
-
-      if (!structureFile) continue
-
-      window.requestAnimationFrame(() => {
-        if (!canvas.value) return
-
-        const context = canvas.value.getContext('2d')
-
-        if (!context) return
-
-        context.clearRect(
-          structure.x,
-          structure.y,
-          structureFile.width * structureFile.tileWidth,
-          structureFile.height * structureFile.tileHeight,
-        )
-
-        drawStructureFromFile({
-          x: structure.x,
-          y: structure.y,
-          structureFile,
-          canvas: canvas.value,
-        })
-      })
-    }
-  }
-
-  currentHoveredStructures.value = newHoveredStructures
 }
 
 function onCanvasMouseMove(event: Event) {
   if (!(event instanceof MouseEvent)) return
   const leftMouseDown = event.buttons === 1
-
-  if (store.selectedTool !== 'addStructure') {
-    drawHoverRectangles()
-  }
 
   if (!leftMouseDown) return
 

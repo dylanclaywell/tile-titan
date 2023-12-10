@@ -214,6 +214,7 @@ export const useEditorStore = defineStore('editor', () => {
   //////////////////// Structure Actions ////////////////////
   function selectStructure(id: string | null) {
     selectedStructureId.value = id
+    selectedTool.value = 'addStructure'
   }
 
   function addStructure({ id, x, y }: { id: string; x: number; y: number }) {
