@@ -97,6 +97,11 @@ export const useEditorStore = defineStore('editor', () => {
       file.tileWidth = newFile.tileWidth
       file.tileHeight = newFile.tileHeight
       file.isStructure = newFile.isStructure
+      file.layers.forEach((l) => {
+        if (l.type === 'tile') {
+          l.data = generateMap(file.width, file.height)
+        }
+      })
     }
   }
 

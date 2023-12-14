@@ -7,6 +7,7 @@ import { useMouse } from '@/hooks/useMouse'
 import colors from '@/colors'
 import { eventEmitter } from '@/events'
 import StructureCanvas from './StructureCanvas.vue'
+import { usePerformanceStore } from '@/stores/performance'
 
 export type Props = {
   containerViewMouse: ReturnType<typeof useMouse>
@@ -25,13 +26,18 @@ const layerComponents = {
 
 const grid = ref<HTMLCanvasElement | null>(null)
 const background = ref<HTMLCanvasElement | null>(null)
-const canvases = ref<HTMLCanvasElement[]>([])
 const root = ref<HTMLDivElement | null>(null)
 const canvasesContainer = ref<HTMLDivElement | null>(null)
 const canvasCursor = ref<HTMLDivElement | null>(null)
 const canvasMouse = useMouse({
   ref: canvasesContainer,
 })
+
+const performanceStore = usePerformanceStore()
+
+const selectedStructure = computed(() =>
+  store.files.find((s) => s.id === store.selectedStructureId),
+)
 
 const canvasTop = computed(() => {
   const oldTop =
@@ -148,11 +154,35 @@ eventEmitter.on('reset-view', () => {
       <img
         v-if="store.selectedLayer?.type === 'tile'"
         :src="store.selectedTile?.blob ?? ''"
-        :width="store.selectedFile?.tileWidth ?? store.selectedFile?.tileWidth"
-        :height="store.selectedFile?.tileHeight ?? store.selectedFile?.tileHeight"
+        :width="store.selectedFile?.tileWidth"
+        :height="store.selectedFile?.tileHeight"
         :class="{
           'bg-blue-400': store.selectedTool === 'addTile',
           'bg-red-400': store.selectedTool === 'removeTile',
+          'z-50 opacity-50': true,
+        }"
+      />
+      <img
+        v-if="store.selectedLayer?.type === 'structure'"
+        :src="
+          store.selectedTool === 'addStructure'
+            ? performanceStore.renderedStructureData.find((r) => r.id === store.selectedStructureId)
+                ?.data ?? ''
+            : ''
+        "
+        :width="
+          selectedStructure && store.selectedTool === 'addStructure'
+            ? selectedStructure.width * selectedStructure.tileWidth
+            : store.selectedFile?.tileWidth
+        "
+        :height="
+          selectedStructure && store.selectedTool === 'addStructure'
+            ? selectedStructure?.height * selectedStructure?.tileHeight
+            : store.selectedFile?.tileHeight
+        "
+        :class="{
+          'bg-blue-400': store.selectedTool === 'addStructure',
+          'bg-red-400': store.selectedTool === 'removeStructure',
           'z-50 opacity-50': true,
         }"
       />

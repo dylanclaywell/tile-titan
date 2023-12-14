@@ -2,13 +2,12 @@ import type { FileType } from '@/types/file'
 import { drawTileLayerToCanvas } from './drawTileLayerToCanvas'
 import { usePerformanceStore } from '@/stores/performance'
 
-async function getStructureData(structureFile: FileType): Promise<string> {
+export async function getStructureData(structureFile: FileType): Promise<string> {
   const performanceStore = usePerformanceStore()
 
   const data = performanceStore.renderedStructureData.find((s) => s.id === structureFile.id)
 
   if (data) {
-    console.log('using cached data')
     return data.data
   }
 
