@@ -384,8 +384,6 @@ export const useEditorStore = defineStore('editor', () => {
     showGrid.value = !showGrid.value
   }
 
-  function resetView() {}
-
   function reset() {
     tilesets.value = []
     selectedTilesetId.value = null

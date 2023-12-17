@@ -190,7 +190,11 @@ eventEmitter.on('reset-view', () => {
     </div>
     <div
       ref="canvasesContainer"
-      class="absolute pointer-events-none"
+      :class="{
+        'absolute pointer-events-none': true,
+        'cursor-crosshair':
+          store.selectedLayer?.type === 'object' && store.selectedTool === 'addObject',
+      }"
       :style="`width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
     >
       <canvas class="absolute top-0 left-0 z-50" ref="grid" v-show="store.showGrid"></canvas>
