@@ -8,6 +8,7 @@ import { useEditorStore } from '@/stores/editor'
 import type { TypeOfLayer } from '@/types/layer'
 import TilesetView from './TilesetView.vue'
 import StructureView from './StructureView.vue'
+import ObjectView from './ObjectView.vue'
 
 const store = useEditorStore()
 
@@ -71,6 +72,7 @@ function getIcon(type: TypeOfLayer) {
       </div>
       <TilesetView v-if="store.selectedLayer?.type === 'tile'" />
       <StructureView v-if="store.selectedLayer?.type === 'structure'" />
+      <ObjectView v-if="store.selectedLayer?.type === 'object'" />
     </div>
   </div>
 </template>

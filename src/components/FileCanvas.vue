@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, ref, watch, defineProps } from 'vue'
 
-import TileCanvas from './TileCanvas.vue'
 import { useEditorStore } from '@/stores/editor'
 import { useMouse } from '@/hooks/useMouse'
 import colors from '@/colors'
 import { eventEmitter } from '@/events'
+import TileCanvas from './TileCanvas.vue'
 import StructureCanvas from './StructureCanvas.vue'
+import ObjectCanvas from './ObjectCanvas.vue'
 import { usePerformanceStore } from '@/stores/performance'
 
 export type Props = {
@@ -20,7 +21,7 @@ const store = useEditorStore()
 
 const layerComponents = {
   tile: TileCanvas,
-  object: '',
+  object: ObjectCanvas,
   structure: StructureCanvas,
 }
 

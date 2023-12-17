@@ -41,6 +41,8 @@ export const useEditorStore = defineStore('editor', () => {
 
   const selectedTile = ref<SelectedTile | null>(null)
 
+  const selectedObjectId = ref<string | null>(null)
+
   const showGrid = ref(true)
 
   const selectedTileset = computed(() => {
@@ -278,8 +280,60 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTile.value = tile
   }
 
-  //////////////////// Miscellaneous Actions ////////////////////
+  //////////////////// Object Actions ////////////////////
+  function addObject({
+    x,
+    y,
+    width,
+    height,
+  }: {
+    x: number
+    y: number
+    width: number
+    height: number
+  }) {
+    const file = selectedFile.value
 
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'object') {
+        const object = {
+          x,
+          y,
+          x2: x + width,
+          y2: y + height,
+          width,
+          height,
+          color: '#000000',
+          isVisible: true,
+          name: 'New Object',
+          sortOrder: 0,
+          id: generateId(),
+        }
+        layer.data.push(object)
+        return object
+      }
+    }
+  }
+
+  function removeObject(id: string) {
+    const file = selectedFile.value
+
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'object') {
+        layer.data = layer.data.filter((o) => o.id !== id)
+      }
+    }
+  }
+
+  function setSelectedObjectId(id: string | null) {
+    selectedObjectId.value = id
+  }
+
+  //////////////////// Miscellaneous Actions ////////////////////
   function toggleGrid() {
     showGrid.value = !showGrid.value
   }
@@ -342,6 +396,12 @@ export const useEditorStore = defineStore('editor', () => {
     selectStructure,
     addStructure,
     removeStructure,
+
+    /// Objects
+    addObject,
+    removeObject,
+    setSelectedObjectId,
+    selectedObjectId,
 
     /// Miscellaneous
     toggleGrid,
