@@ -1,19 +1,9 @@
-import EventEmitter from 'events'
+import mitt from 'mitt'
 
-export type TileTitanEventMap = {
-  'reset-view': []
+export type Events = {
+  'reset-view': undefined
+  // Please use this sparingly
+  'redraw-layer': string
 }
 
-type TileTitanEvent = keyof TileTitanEventMap
-
-class TileTitanEventEmitter extends EventEmitter {
-  emit(event: TileTitanEvent, ...args: TileTitanEventMap[TileTitanEvent]): boolean {
-    return super.emit(event, ...args)
-  }
-
-  on(event: TileTitanEvent, listener: (...args: TileTitanEventMap[TileTitanEvent]) => void): this {
-    return super.on(event, listener)
-  }
-}
-
-export const eventEmitter = new TileTitanEventEmitter()
+export const eventEmitter = mitt<Events>()

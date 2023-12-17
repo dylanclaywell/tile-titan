@@ -5,6 +5,7 @@ import z from 'zod'
 import TextField from '@/components/TextField.vue'
 import { useEditorStore } from '@/stores/editor'
 import { zodStringToNumber } from '@/utils/zod'
+import { eventEmitter } from '@/events'
 
 const Form = z.object({
   name: z.string().min(1),
@@ -35,13 +36,18 @@ function submit(event: Event) {
 
   if (!(event.target instanceof HTMLFormElement)) return
 
+  if (!store.selectedObjectId) return
+
   const formData = new FormData(event.target)
   const rawValues = Object.fromEntries(formData.entries())
+  console.log(rawValues)
   try {
     const values = Form.parse(rawValues)
     errors.value = {}
 
-    store.updateFile(store.selectedFile?.id ?? '', values as any)
+    store.updateObject(store.selectedObjectId, {
+      ...values,
+    })
   } catch (error) {
     console.error(error)
 
@@ -60,8 +66,9 @@ function submit(event: Event) {
 function submitForm() {
   const form = document.activeElement?.closest('form')
 
-  if (form instanceof HTMLFormElement && form.id === 'file-properties') {
+  if (form instanceof HTMLFormElement && form.id === 'object-properties') {
     form.requestSubmit()
+    if (store.selectedLayer) eventEmitter.emit('redraw-layer', store.selectedLayer?.id)
   }
 }
 
@@ -82,7 +89,7 @@ onUnmounted(() => {
 
 <template>
   <form
-    id="file-properties"
+    id="object-properties"
     class="space-y-4 p-4 basis-1/2 overflow-y-auto flex-shrink-0 flex-grow"
     @submit="submit"
   >
@@ -123,7 +130,7 @@ onUnmounted(() => {
     />
     <TextField
       :value="selectedObject?.color"
-      name="color "
+      name="color"
       label="Color"
       :has-error="Boolean(errors.color)"
       :helper-text="errors.color"

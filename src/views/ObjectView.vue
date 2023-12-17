@@ -3,8 +3,17 @@ import { useEditorStore } from '@/stores/editor'
 import ResourceList from '@/components/ResourceList/ResourceList.vue'
 import ResourceItem from '@/components/ResourceList/ResourceItem.vue'
 import ObjectPropertyView from './ObjectPropertyView.vue'
+import { eventEmitter } from '@/events'
 
 const store = useEditorStore()
+
+function onDelete(id: string) {
+  store.removeObject(id)
+
+  if (!store.selectedLayerId) return
+
+  eventEmitter.emit('redraw-layer', store.selectedLayerId)
+}
 </script>
 
 <template>
@@ -22,7 +31,7 @@ const store = useEditorStore()
           :id="object.id"
           :is-selected="store.selectedObjectId === object.id"
           @click="() => store.setSelectedObjectId(object.id)"
-          @delete="() => store.removeObject(object.id)"
+          @delete="onDelete(object.id)"
         >
           {{ object.name }}
         </ResourceItem>

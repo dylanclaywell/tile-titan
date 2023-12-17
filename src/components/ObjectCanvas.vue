@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { eventEmitter } from '@/events'
 import { useMouse } from '@/hooks/useMouse'
 import { useEditorStore } from '@/stores/editor'
 import type { ObjectType } from '@/types/object'
@@ -47,12 +48,8 @@ function drawFullCanvas() {
     const layer = store.selectedFile?.layers.find((layer) => layer.id === props.id)
     if (!layer || layer.type !== 'object') return
 
-    console.log('beep')
-
     layer.data.forEach((object) => {
       if (!canvas.value) return
-
-      console.log('boop')
 
       drawObject(object)
     })
@@ -113,7 +110,13 @@ function clearStructure({ x, y }: { x: number; y: number }) {
   if (clickedStructures.length > 0) drawFullCanvas()
 }
 
-function onCanvasClick() {
+function onCanvasClick(event: Event) {
+  if (!(event instanceof MouseEvent)) return
+
+  const leftMouseDown = event.buttons === 1
+
+  if (!leftMouseDown) return
+
   if (!canvas.value) return
 
   // This component only supports tile clicking - if the selected layer
@@ -132,8 +135,27 @@ function onCanvasClick() {
       height: 1,
     })
     drawFullCanvas()
-  } else if (store.selectedTool === 'removeStructure') {
-    // TODO
+  } else if (store.selectedTool === 'removeObject') {
+    const clickedObjects = store.selectedFile.layers
+      .filter((layer) => layer.type === 'object')
+      .flatMap((layer) => {
+        if (layer.type !== 'object') return []
+
+        return layer.data.filter((object) => {
+          return (
+            offsetX >= object.x &&
+            offsetY >= object.y &&
+            offsetX < object.x + object.width &&
+            offsetY < object.y + object.height
+          )
+        })
+      })
+
+    for (const object of clickedObjects) {
+      store.removeObject(object.id)
+    }
+
+    if (clickedObjects.length > 0) drawFullCanvas()
   }
 }
 
@@ -155,6 +177,39 @@ function onCanvasMouseMove(event: Event) {
   }
 }
 
+function onCanvasMouseUp() {
+  if (store.selectedTool === 'addObject') {
+    if (!objectBeingCreated.value) return
+
+    // Fix negative widths and heights of objectBeingCreated
+    const width =
+      objectBeingCreated.value.width < 0
+        ? objectBeingCreated.value.width * -1
+        : objectBeingCreated.value.width
+    const height =
+      objectBeingCreated.value.height < 0
+        ? objectBeingCreated.value.height * -1
+        : objectBeingCreated.value.height
+    const x =
+      objectBeingCreated.value.width < 0
+        ? objectBeingCreated.value.x - width
+        : objectBeingCreated.value.x
+    const y =
+      objectBeingCreated.value.height < 0
+        ? objectBeingCreated.value.y - height
+        : objectBeingCreated.value.y
+
+    store.updateObject(objectBeingCreated.value.id, {
+      x,
+      y,
+      width,
+      height,
+    })
+
+    objectBeingCreated.value = undefined
+  }
+}
+
 watch(
   () => store.selectedFile?.width,
   () => drawFullCanvas(),
@@ -163,6 +218,12 @@ watch(
   () => store.selectedFile?.height,
   () => drawFullCanvas(),
 )
+
+eventEmitter.on('redraw-layer', (id) => {
+  if (props.id === id) {
+    drawFullCanvas()
+  }
+})
 
 onMounted(() => {
   drawFullCanvas()
@@ -185,6 +246,7 @@ onUnmounted(() => {
     ref="canvas"
     :id="props.id"
     @mousedown="onCanvasClick"
+    @mouseup="onCanvasMouseUp"
     @mousemove="onCanvasMouseMove"
     @mouseleave="drawFullCanvas"
   ></canvas>

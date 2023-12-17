@@ -176,6 +176,11 @@ export const useEditorStore = defineStore('editor', () => {
     if (file) {
       file.layers = file.layers.filter((l) => l.id !== layerId)
     }
+
+    selectedLayerId.value = null
+    selectedStructureId.value = null
+    selectedObjectId.value = null
+    selectedTile.value = null
   }
 
   function selectLayer(layerId: string) {
@@ -250,6 +255,8 @@ export const useEditorStore = defineStore('editor', () => {
       if (layer && layer.type === 'structure') {
         layer.data = layer.data.filter((s) => s.id !== id)
       }
+
+      selectedStructureId.value = null
     }
   }
 
@@ -326,11 +333,50 @@ export const useEditorStore = defineStore('editor', () => {
       if (layer && layer.type === 'object') {
         layer.data = layer.data.filter((o) => o.id !== id)
       }
+
+      selectedObjectId.value = null
     }
   }
 
   function setSelectedObjectId(id: string | null) {
     selectedObjectId.value = id
+  }
+
+  function updateObject(
+    id: string,
+    {
+      x,
+      y,
+      width,
+      height,
+      color,
+      name,
+    }: { x: number; y: number; width: number; height: number; color?: string; name?: string },
+  ) {
+    const file = selectedFile.value
+
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'object') {
+        const object = layer.data.find((o) => o.id === id)
+
+        if (object) {
+          object.x = x
+          object.y = y
+          object.x2 = x + width
+          object.y2 = y + height
+          object.width = width
+          object.height = height
+          if (color) {
+            object.color = color
+          }
+          if (name) {
+            object.name = name
+          }
+        }
+      }
+    }
   }
 
   //////////////////// Miscellaneous Actions ////////////////////
@@ -402,6 +448,7 @@ export const useEditorStore = defineStore('editor', () => {
     removeObject,
     setSelectedObjectId,
     selectedObjectId,
+    updateObject,
 
     /// Miscellaneous
     toggleGrid,
