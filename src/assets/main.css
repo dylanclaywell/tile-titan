@@ -1,5 +1,11 @@
 @import './base.css';
 
+@layer utilities {
+  .image-rendering-pixelated {
+    image-rendering: pixelated;
+  }
+}
+
 button {
   cursor: default;
 }

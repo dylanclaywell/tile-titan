@@ -123,8 +123,12 @@ watch(canvasMouse.state.value, () => {
     y: 0,
   }
 
-  canvasCursor.value.style.top = `${Math.floor((y - offsetY) / tileHeight) * tileHeight}px`
-  canvasCursor.value.style.left = `${Math.floor((x - offsetX) / tileWidth) * tileWidth}px`
+  canvasCursor.value.style.top = `${
+    Math.floor((y - offsetY) / store.zoom / tileHeight) * tileHeight
+  }px`
+  canvasCursor.value.style.left = `${
+    Math.floor((x - offsetX) / store.zoom / tileWidth) * tileWidth
+  }px`
 })
 
 onMounted(() => {
@@ -149,7 +153,7 @@ eventEmitter.on('reset-view', () => {
   <div
     ref="root"
     class="border-r border-b border-gray-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-    :style="`top: ${canvasTop}; left: ${canvasLeft}; width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
+    :style="`top: ${canvasTop}; left: ${canvasLeft}; width: ${store.widthPx}px; height: ${store.heightPx}px; transform: scale(${store.zoom})`"
   >
     <div ref="canvasCursor" class="absolute top-0 left-0 z-50 pointer-events-none">
       <img
@@ -191,20 +195,27 @@ eventEmitter.on('reset-view', () => {
     <div
       ref="canvasesContainer"
       :class="{
-        'absolute pointer-events-none': true,
+        'image-rendering-pixelated absolute pointer-events-none': true,
         'cursor-crosshair':
           store.selectedLayer?.type === 'object' && store.selectedTool === 'addObject',
       }"
       :style="`width: ${store.widthPx}px; height: ${store.heightPx}px;}`"
     >
-      <canvas class="absolute top-0 left-0 z-50" ref="grid" v-show="store.showGrid"></canvas>
+      <canvas
+        class="image-rendering-pixelated absolute top-0 left-0 z-50"
+        ref="grid"
+        v-show="store.showGrid"
+      ></canvas>
       <component
         v-for="layer in store.selectedFile?.layers"
         :key="layer.id"
         :is="layerComponents[layer.type]"
         :id="layer.id"
       ></component>
-      <canvas class="absolute top-0 left-0 -z-10 shadow" ref="background"></canvas>
+      <canvas
+        class="image-rendering-pixelated absolute top-0 left-0 -z-10 shadow"
+        ref="background"
+      ></canvas>
     </div>
   </div>
 </template>

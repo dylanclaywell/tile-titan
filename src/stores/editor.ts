@@ -45,6 +45,8 @@ export const useEditorStore = defineStore('editor', () => {
 
   const showGrid = ref(true)
 
+  const zoom = ref(2)
+
   const selectedTileset = computed(() => {
     return tilesets.value.find((t) => t.id === selectedTilesetId.value)
   })
@@ -394,6 +396,14 @@ export const useEditorStore = defineStore('editor', () => {
     selectedTile.value = null
   }
 
+  function zoomIn() {
+    zoom.value += 0.1 * zoom.value
+  }
+
+  function zoomOut() {
+    zoom.value -= 0.1 * zoom.value
+  }
+
   return {
     /// Tilesets
     tilesets,
@@ -452,5 +462,8 @@ export const useEditorStore = defineStore('editor', () => {
     toggleGrid,
     showGrid,
     reset,
+    zoomIn,
+    zoomOut,
+    zoom,
   }
 })

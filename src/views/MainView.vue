@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 import FileCanvas from '@/components/FileCanvas.vue'
 import TileLayerToolBar from '@/components/TileLayerToolBar.vue'
@@ -15,12 +15,35 @@ const canvasContainerMouse = useMouse({
   ref: canvasContainer,
 })
 
+function onMouseWheel(event: Event) {
+  if (!(event instanceof WheelEvent)) return
+
+  if (
+    !(event.target instanceof HTMLElement) ||
+    !(event.target.contains(canvasContainer.value) || canvasContainer.value?.contains(event.target))
+  ) {
+    return
+  }
+
+  const { deltaY } = event
+
+  if (deltaY > 0) {
+    store.zoomOut()
+  } else {
+    store.zoomIn()
+  }
+}
+
 onMounted(() => {
   canvasContainerMouse.register()
+
+  addEventListener('wheel', onMouseWheel)
 })
 
 onUnmounted(() => {
   canvasContainerMouse.unregister()
+
+  removeEventListener('wheel', onMouseWheel)
 })
 </script>
 

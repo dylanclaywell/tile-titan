@@ -42,24 +42,6 @@ function drawFullCanvas() {
     tileWidth: store.selectedFile?.tileWidth ?? 0,
     tileHeight: store.selectedFile?.tileHeight ?? 0,
   })
-
-  // layer.data.forEach((row, y) => {
-  //   row.forEach((tile, x) => {
-  //     if (!tile) return
-
-  //     const image = new Image()
-
-  //     image.src = tile.tileData ?? ''
-
-  //     image.onload = () => {
-  //       context.drawImage(
-  //         image,
-  //         x * (store.selectedFile?.tileWidth ?? 0),
-  //         y * (store.selectedFile?.tileHeight ?? 0),
-  //       )
-  //     }
-  //   })
-  // })
 }
 
 function drawTile({ x, y, blob }: { x: number; y: number; blob: string }) {
@@ -174,7 +156,7 @@ onUnmounted(() => {
 
 <template>
   <canvas
-    :class="`absolute top-0 left-0 z-0 ${
+    :class="`image-render-pixelated absolute top-0 left-0 z-0 ${
       store.selectedLayerId !== props.id ? 'pointer-events-none' : 'pointer-events-auto'
     }`"
     :width="store.widthPx"

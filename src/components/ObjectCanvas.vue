@@ -238,7 +238,7 @@ onUnmounted(() => {
 
 <template>
   <canvas
-    :class="`absolute top-0 left-0 z-0 ${
+    :class="`image-rendering-pixelated absolute top-0 left-0 z-0 ${
       store.selectedLayerId !== props.id ? 'pointer-events-none' : 'pointer-events-auto'
     }`"
     :width="store.widthPx"
