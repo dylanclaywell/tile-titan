@@ -75,7 +75,6 @@ function onSave() {
   localforage.setItem('files', clonedFiles)
   localforage.setItem('tilesets', clonedTilesets)
 
-  console.log('Project saved')
   eventEmitter.emit('notification', 'Project saved')
 }
 </script>
