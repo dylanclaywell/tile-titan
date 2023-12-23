@@ -7,6 +7,7 @@ import { useEditorStore } from './stores/editor'
 import { RenderedStructureSchema, usePerformanceStore } from './stores/performance'
 import { File } from './types/file'
 import { Tileset } from './types/tileset'
+import NotificationBar from './components/NotificationBar.vue'
 
 const editorStore = useEditorStore()
 const performanceStore = usePerformanceStore()
@@ -41,6 +42,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <notification-bar />
   <router-view name="Toolbar" />
   <div class="flex justify-between divide-x flex-grow overflow-hidden">
     <router-view name="File" />

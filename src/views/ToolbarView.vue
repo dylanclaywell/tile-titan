@@ -9,6 +9,9 @@ import { useEditorStore } from '@/stores/editor'
 import { importProject } from '@/lib/importProject'
 import FileUploader from '@/components/FileUploader.vue'
 import { exportProject } from '@/lib/exportProject'
+import { eventEmitter } from '@/events'
+import ToolButton from '../components/ToolBar/ToolButton.vue'
+import localforage from 'localforage'
 
 const editorStore = useEditorStore()
 
@@ -59,6 +62,22 @@ async function onUpload(event: Event) {
 async function onDownload() {
   exportProject(editorStore.files, editorStore.tilesets)
 }
+
+function resetView() {
+  eventEmitter.emit('reset-view')
+}
+
+function onSave() {
+  // Need to clone the state because localforage doesn't like the Proxy objects
+  const clonedFiles = JSON.parse(JSON.stringify(editorStore.files))
+  const clonedTilesets = JSON.parse(JSON.stringify(editorStore.tilesets))
+
+  localforage.setItem('files', clonedFiles)
+  localforage.setItem('tilesets', clonedTilesets)
+
+  console.log('Project saved')
+  eventEmitter.emit('notification', 'Project saved')
+}
 </script>
 
 <template>
@@ -80,7 +99,13 @@ async function onDownload() {
           :is-selected="false"
           :on-click="openConfirmationModal"
         />
-        <Tool name="Save Project" icon="save" :is-disabled="false" :is-selected="false" />
+        <Tool
+          name="Save Project"
+          icon="save"
+          :is-disabled="false"
+          :is-selected="false"
+          @click="onSave"
+        />
       </ToolSection>
       <ToolSection>
         <FileUploader name="Import Project" @change="onUpload">
@@ -96,6 +121,22 @@ async function onDownload() {
           :is-disabled="false"
           :is-selected="false"
           @click="onDownload"
+        />
+      </ToolSection>
+      <ToolSection>
+        <ToolButton
+          name="Show Grid"
+          icon="border-all"
+          :is-disabled="false"
+          :is-selected="editorStore.showGrid"
+          :on-click="editorStore.toggleGrid"
+        />
+        <ToolButton
+          name="Reset View"
+          icon="camera-rotate"
+          :is-disabled="false"
+          :is-selected="false"
+          :on-click="resetView"
         />
       </ToolSection>
     </ToolBar>

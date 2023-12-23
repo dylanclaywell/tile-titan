@@ -157,7 +157,7 @@ eventEmitter.on('reset-view', () => {
   >
     <div ref="canvasCursor" class="absolute top-0 left-0 z-50 pointer-events-none">
       <img
-        v-if="store.selectedLayer?.type === 'tile'"
+        v-if="store.selectedLayer?.type === 'tile' && store.selectedTile"
         :src="store.selectedTile?.blob ?? ''"
         :width="store.selectedFile?.tileWidth"
         :height="store.selectedFile?.tileHeight"
@@ -207,7 +207,7 @@ eventEmitter.on('reset-view', () => {
         v-show="store.showGrid"
       ></canvas>
       <component
-        v-for="layer in store.selectedFile?.layers"
+        v-for="layer in store.selectedFile?.layers.filter((l) => l.isVisible) ?? []"
         :key="layer.id"
         :is="layerComponents[layer.type]"
         :id="layer.id"

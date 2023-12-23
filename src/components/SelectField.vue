@@ -62,7 +62,10 @@ onUnmounted(() => {
     />
     <menu
       v-if="isOpen"
-      className="absolute border border-gray-400 rounded-md bg-white z-50 top-full w-full flex flex-col rotate overflow-y-auto"
+      class="absolute border border-gray-400 rounded-md bg-white z-50 top-full w-full flex flex-col rotate overflow-y-auto"
+      :style="{
+        maxHeight: `calc(100vh - ${root?.getBoundingClientRect().bottom}px - 0.5rem)`,
+      }"
     >
       <div v-if="!options.length" class="p-4 text-gray-400">
         {{ props.noResultsMessage ?? 'No results' }}
