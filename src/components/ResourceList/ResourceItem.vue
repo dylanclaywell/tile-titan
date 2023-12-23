@@ -6,6 +6,8 @@ export type Props = {
   onDelete?: () => void
   onEdit?: () => void
   onShow?: () => void
+  onUp?: () => void
+  onDown?: () => void
   isVisible?: boolean
   isSelected?: boolean
 }
@@ -26,6 +28,16 @@ function show(event: Event) {
   props.onShow?.()
   event.stopPropagation()
 }
+
+function up(event: Event) {
+  props.onUp?.()
+  event.stopPropagation()
+}
+
+function down(event: Event) {
+  props.onDown?.()
+  event.stopPropagation()
+}
 </script>
 
 <template>
@@ -41,9 +53,34 @@ function show(event: Event) {
     {{ props.name }}
     <div class="flex-grow flex justify-end space-x-2">
       <button
+        v-if="props.onUp"
+        :class="{
+          'group-hover:visible invisible': true,
+          'hover:text-cyan-800': isSelected,
+          'hover:text-cyan-700': !isSelected,
+        }"
+        @click="up"
+        title="Move up"
+      >
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+      <button
+        v-if="props.onDown"
+        :class="{
+          'group-hover:visible invisible': true,
+          'hover:text-cyan-800': isSelected,
+          'hover:text-cyan-700': !isSelected,
+        }"
+        @click="down"
+        title="Move down"
+      >
+        <i class="fa-solid fa-arrow-down"></i>
+      </button>
+      <button
         v-if="props.onEdit"
         class="group-hover:visible invisible hover:text-green-600"
         @click="edit"
+        title="Edit"
       >
         <i class="fa-solid fa-pencil"></i>
       </button>
@@ -51,6 +88,7 @@ function show(event: Event) {
         v-if="props.onShow"
         class="group-hover:visible invisible hover:text-yellow-600"
         @click="show"
+        :title="props.isVisible ? 'Hide' : 'Show'"
       >
         <i :class="`fa-solid ${isVisible ? 'fa-eye' : 'fa-eye-slash'}`"></i>
       </button>
@@ -58,6 +96,7 @@ function show(event: Event) {
         v-if="props.onDelete"
         class="group-hover:visible invisible hover:text-red-600"
         @click="del"
+        title="Delete"
       >
         <i class="fa-solid fa-trash-can"></i>
       </button>

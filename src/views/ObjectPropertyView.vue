@@ -40,7 +40,6 @@ function submit(event: Event) {
 
   const formData = new FormData(event.target)
   const rawValues = Object.fromEntries(formData.entries())
-  console.log(rawValues)
   try {
     const values = Form.parse(rawValues)
     errors.value = {}

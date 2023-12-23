@@ -26,7 +26,8 @@ function drawObject(object: ObjectType) {
   if (!context) return
 
   context.strokeStyle = color ?? '#000000'
-  context.strokeRect(x, y, width, height)
+  context.lineWidth = 1
+  context.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1)
 }
 
 function drawFullCanvas() {

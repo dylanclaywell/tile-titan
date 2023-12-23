@@ -8,6 +8,7 @@ import ConfirmationModal from '../components/ConfirmationModal.vue'
 import { useEditorStore } from '@/stores/editor'
 import { importProject } from '@/lib/importProject'
 import FileUploader from '@/components/FileUploader.vue'
+import { exportProject } from '@/lib/exportProject'
 
 const editorStore = useEditorStore()
 
@@ -54,6 +55,10 @@ async function onUpload(event: Event) {
 
   event.target.value = ''
 }
+
+async function onDownload() {
+  exportProject(editorStore.files, editorStore.tilesets)
+}
 </script>
 
 <template>
@@ -85,7 +90,13 @@ async function onUpload(event: Event) {
             <i className="fa-solid fa-upload"></i>
           </div>
         </FileUploader>
-        <Tool name="Export Project" icon="download" :is-disabled="false" :is-selected="false" />
+        <Tool
+          name="Export Project"
+          icon="download"
+          :is-disabled="false"
+          :is-selected="false"
+          @click="onDownload"
+        />
       </ToolSection>
     </ToolBar>
   </div>

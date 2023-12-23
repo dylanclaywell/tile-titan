@@ -209,6 +209,48 @@ export const useEditorStore = defineStore('editor', () => {
     }
   }
 
+  function decreaseSortOrder(layerId: string) {
+    const file = selectedFile.value
+    if (!file) return
+
+    const layer = file.layers.find((l) => l.id === layerId)
+
+    if (!layer) return
+
+    const layerBelow: LayerType | undefined = file.layers
+      .filter((l) => l.sortOrder < layer.sortOrder)
+      .sort((a, b) => b.sortOrder - a.sortOrder)[0]
+
+    if (!layerBelow) return
+
+    const tempSortOrder = layerBelow.sortOrder
+    layerBelow.sortOrder = layer.sortOrder
+    layer.sortOrder = tempSortOrder
+
+    file.layers = file.layers.sort((a, b) => a.sortOrder - b.sortOrder)
+  }
+
+  function increaseSortOrder(layerId: string) {
+    const file = selectedFile.value
+    if (!file) return
+
+    const layer = file.layers.find((l) => l.id === layerId)
+
+    if (!layer) return
+
+    const layerAbove: LayerType | undefined = file.layers
+      .filter((l) => l.sortOrder > layer.sortOrder)
+      .sort((a, b) => a.sortOrder - b.sortOrder)[0]
+
+    if (!layerAbove) return
+
+    const tempSortOrder = layerAbove.sortOrder
+    layerAbove.sortOrder = layer.sortOrder
+    layer.sortOrder = tempSortOrder
+
+    file.layers = file.layers.sort((a, b) => a.sortOrder - b.sortOrder)
+  }
+
   //////////////////// Tool Actions ////////////////////
   // `selectTool` is used to toggle the tool on and off
   function selectTool(tool: ToolType) {
@@ -444,6 +486,8 @@ export const useEditorStore = defineStore('editor', () => {
     selectLayer,
     deleteLayer,
     toggleLayerVisibility,
+    moveLayerUp: decreaseSortOrder,
+    moveLayerDown: increaseSortOrder,
 
     /// Structures
     selectedStructureId,

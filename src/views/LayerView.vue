@@ -67,6 +67,8 @@ function getIcon(type: TypeOfLayer) {
             @click="() => store.selectLayer(layer.id)"
             :on-delete="() => store.deleteLayer(layer.id)"
             :on-show="() => store.toggleLayerVisibility(layer.id)"
+            :on-up="() => store.moveLayerUp(layer.id)"
+            :on-down="() => store.moveLayerDown(layer.id)"
           />
         </ResourceList>
       </div>
