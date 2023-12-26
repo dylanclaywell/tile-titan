@@ -8,12 +8,12 @@ const store = useEditorStore()
 
 function selectAddTile() {
   store.selectTool('addTile')
-  store.setTile(null)
+  store.setSelectedTile(null)
 }
 
 function selectRemoveTile() {
   store.selectTool('removeTile')
-  store.setTile(null)
+  store.setSelectedTile(null)
 }
 </script>
 

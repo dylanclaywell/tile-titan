@@ -68,6 +68,8 @@ function drawCanvas() {
 function onCanvasClick() {
   if (!store.selectedFile) return
 
+  if (!store.selectedTileset) return
+
   if (!tilesetCanvas.value || !hiddenCanvas.value) return
 
   const context = hiddenCanvas.value?.getContext('2d')
@@ -87,7 +89,9 @@ function onCanvasClick() {
     store.selectedFile.tileHeight,
   )
 
-  store.setTile({
+  store.setSelectedTile({
+    tilesetId: store.selectedTileset?.id,
+    tilesetName: store.selectedTileset?.name,
     width: store.selectedFile.tileWidth,
     height: store.selectedFile.tileHeight,
     tilesetX: mouseX.value,

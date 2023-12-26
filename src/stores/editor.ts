@@ -18,6 +18,8 @@ export type ToolType =
   | 'selectObject'
 
 export type SelectedTile = {
+  tilesetId: string
+  tilesetName: string
   width: number
   height: number
   tilesetX: number
@@ -327,8 +329,41 @@ export const useEditorStore = defineStore('editor', () => {
     tilesets.value = tilesets.value.filter((t) => t.id !== id)
   }
 
-  function setTile(tile: SelectedTile | null) {
+  function setSelectedTile(tile: SelectedTile | null) {
     selectedTile.value = tile
+  }
+
+  function addTile({ x, y }: { x: number; y: number }) {
+    if (!selectedTile.value) return
+
+    const file = selectedFile.value
+
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'tile') {
+        console.log('adding tile')
+        layer.data[y][x] = selectedTile.value
+      }
+    }
+  }
+
+  function removeTile({ x, y }: { x: number; y: number }) {
+    const file = selectedFile.value
+
+    if (file) {
+      const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+      if (layer && layer.type === 'tile') {
+        layer.data[y][x] = {
+          tilesetId: '',
+          tilesetName: '',
+          tilesetX: -1,
+          tilesetY: -1,
+          tileData: '',
+        }
+      }
+    }
   }
 
   //////////////////// Object Actions ////////////////////
@@ -458,7 +493,9 @@ export const useEditorStore = defineStore('editor', () => {
     setTilesets,
     deleteTileset,
     selectedTile,
-    setTile,
+    setSelectedTile,
+    addTile,
+    removeTile,
 
     /// Tools
     selectedTool,

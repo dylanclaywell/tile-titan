@@ -109,6 +109,7 @@ function onCanvasClick() {
       y: tileY * tileHeight,
       blob: store.selectedTile?.blob ?? '',
     })
+    store.addTile({ x: tileX, y: tileY })
   } else if (store.selectedTool === 'removeTile') {
     store.selectedLayer.data[tileY][tileX] = {
       tilesetId: '',
@@ -122,6 +123,7 @@ function onCanvasClick() {
       x: tileX * tileWidth,
       y: tileY * tileHeight,
     })
+    store.removeTile({ x: tileX, y: tileY })
   }
 }
 
