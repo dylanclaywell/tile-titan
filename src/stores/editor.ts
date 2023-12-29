@@ -93,6 +93,14 @@ export const useEditorStore = defineStore('editor', () => {
 
   //////////////////// File Actions ////////////////////
 
+  function renameFile(fileId: string, newName: string) {
+    const file = files.value.find((f) => f.id === fileId)
+
+    if (!file) return
+
+    file.name = newName
+  }
+
   function updateFile(fileId: string, newFile: FileType) {
     const file = files.value.find((f) => f.id === fileId)
 
@@ -141,6 +149,18 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   //////////////////// Layer Actions ////////////////////
+
+  function renameLayer(layerId: string, newName: string) {
+    const file = selectedFile.value
+
+    if (!file) return
+
+    const layer = file.layers.find((l) => l.id === layerId)
+
+    if (!layer) return
+
+    layer.name = newName
+  }
 
   function newLayer(type: TypeOfLayer) {
     const file = selectedFile.value
@@ -229,7 +249,7 @@ export const useEditorStore = defineStore('editor', () => {
     layerBelow.sortOrder = layer.sortOrder
     layer.sortOrder = tempSortOrder
 
-    file.layers = file.layers.sort((a, b) => a.sortOrder - b.sortOrder)
+    file.layers = file.layers.slice(0).sort((a, b) => b.sortOrder - a.sortOrder)
   }
 
   function increaseSortOrder(layerId: string) {
@@ -250,7 +270,7 @@ export const useEditorStore = defineStore('editor', () => {
     layerAbove.sortOrder = layer.sortOrder
     layer.sortOrder = tempSortOrder
 
-    file.layers = file.layers.sort((a, b) => a.sortOrder - b.sortOrder)
+    file.layers = file.layers.slice(0).sort((a, b) => b.sortOrder - a.sortOrder)
   }
 
   //////////////////// Tool Actions ////////////////////
@@ -270,6 +290,7 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   //////////////////// Structure Actions ////////////////////
+
   function selectStructure(id: string | null) {
     selectedStructureId.value = id
     selectedTool.value = 'addStructure'
@@ -342,8 +363,7 @@ export const useEditorStore = defineStore('editor', () => {
       const layer = file.layers.find((l) => l.id === selectedLayerId.value)
 
       if (layer && layer.type === 'tile') {
-        console.log('adding tile')
-        layer.data[y][x] = selectedTile.value
+        layer.data[y][x] = { ...selectedTile.value, tileData: selectedTile.value.blob }
       }
     }
   }
@@ -367,6 +387,21 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   //////////////////// Object Actions ////////////////////
+  function renameObject(id: string, newName: string) {
+    const file = selectedFile.value
+
+    if (!file) return
+
+    const layer = file.layers.find((l) => l.id === selectedLayerId.value)
+
+    if (!layer || layer.type !== 'object') return
+
+    const object = layer.data.find((o) => o.id === id)
+
+    if (!object) return
+    object.name = newName
+  }
+
   function addObject({
     x,
     y,
@@ -504,6 +539,7 @@ export const useEditorStore = defineStore('editor', () => {
 
     /// Files
     files,
+    renameFile,
     updateFile,
     newFile,
     deleteFile,
@@ -519,6 +555,7 @@ export const useEditorStore = defineStore('editor', () => {
     /// Layers
     selectedLayerId,
     selectedLayer,
+    renameLayer,
     newLayer,
     selectLayer,
     deleteLayer,
@@ -533,6 +570,7 @@ export const useEditorStore = defineStore('editor', () => {
     removeStructure,
 
     /// Objects
+    renameObject,
     addObject,
     removeObject,
     setSelectedObjectId,

@@ -32,6 +32,7 @@ function onDelete(id: string) {
           :is-selected="store.selectedObjectId === object.id"
           @click="() => store.setSelectedObjectId(object.id)"
           @delete="onDelete(object.id)"
+          :on-name-change="(name) => store.renameObject(object.id, name)"
         >
           {{ object.name }}
         </ResourceItem>

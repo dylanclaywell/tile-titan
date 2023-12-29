@@ -34,6 +34,7 @@ const store = useEditorStore()
             :id="file.id"
             @click="() => store.selectFile(file.id)"
             :on-delete="() => store.deleteFile(file.id)"
+            :on-name-change="(name) => store.renameFile(file.id, name)"
           />
         </ResourceList>
       </div>

@@ -44,9 +44,13 @@ export async function drawTileLayerToCanvas({
 
       if (!tile) continue
 
+      // Don't attempt to draw or even create an image if there is no tile data
+      // That would cause this logic to silently fail
+      if (!tile.tileData) continue
+
       const image = new Image()
 
-      image.src = tile.tileData ?? ''
+      image.src = tile.tileData
 
       await draw({ image, x, y, context, tileWidth, tileHeight })
     }

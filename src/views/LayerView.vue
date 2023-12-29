@@ -57,7 +57,9 @@ function getIcon(type: TypeOfLayer) {
       <div class="p-2 basis-1/2 flex-grow overflow-y-auto flex-shrink-0">
         <ResourceList name="Layers" v-if="store.selectedFile">
           <ResourceItem
-            v-for="layer in store.selectedFile.layers"
+            v-for="layer in store.selectedFile.layers
+              .slice(0)
+              .sort((a, b) => a.sortOrder - b.sortOrder)"
             :key="layer.id"
             :name="layer.name"
             :id="layer.id"
@@ -69,6 +71,7 @@ function getIcon(type: TypeOfLayer) {
             :on-show="() => store.toggleLayerVisibility(layer.id)"
             :on-up="() => store.moveLayerUp(layer.id)"
             :on-down="() => store.moveLayerDown(layer.id)"
+            :on-name-change="(name) => store.renameLayer(layer.id, name)"
           />
         </ResourceList>
       </div>
