@@ -1,46 +1,60 @@
-# tile-titan-vue
+<p align="center">
+  <a href="https://www.tile-titan.com" target="_blank" rel="noopener noreferrer">
+    <img width="128" src="./public/tile-titan_128.png" alt="Tile Titan logo">
+  </a>
+</p>
+<br/>
 
-This template should help get you started developing with Vue 3 in Vite.
+# Tile Titan
 
-## Recommended IDE Setup
+Tile Titan is a simple web app that allows you to create and export tilemaps for use in game development or other similar projects.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Features
 
-## Type Support for `.vue` Imports in TS
+### Export project to a zip file
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+You can export your project to a zip file in Tile Titan. This is useful if you want to share your project with others or use it in another project.
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+### Import project from a zip file
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Tile Titan allows you to import an existing project from a zip file. This is useful if you want to continue working on a previously created tilemap.
 
-## Customize configuration
+### Uploading tilesets
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+Tile Titan allows you to upload your own tilesets. Simply select the tileset file from your local machine and it will be added to the project.
 
-## Project Setup
+### Creating tile layers
 
-```sh
-npm install
-```
+With Tile Titan, you can create tile layers for your tilemap. This allows you to easily add tiles to your map and create a visually appealing design.
 
-### Compile and Hot-Reload for Development
+### Creating object layers
 
-```sh
-npm run dev
-```
+Object layers can also be created in Tile Titan. Object layers are used to add non-tile objects to your map, such as NPCs or interactive objects.
 
-### Type-Check, Compile and Minify for Production
+### Creating structure layers
 
-```sh
-npm run build
-```
+Finally, Tile Titan allows you to create structure layers. Structure layers are used to add structural elements to your map, such as walls, bridges, or other architectural elements.
 
-### Lint with [ESLint](https://eslint.org/)
+## Scripts
 
-```sh
-npm run lint
-```
+### yarn dev
+
+Runs the app in development mode using Vite. Open http://localhost:3001 to view it in the browser.
+
+The page will reload automatically when changes are made to the code.
+
+### yarn build
+
+Builds the app for production using Vite. The build artifacts will be stored in the dist/ directory. This script also generates source maps for easier debugging.
+
+### yarn preview
+
+Runs the production build of the app using Vite. Open http://localhost:4173 to view it in the browser.
+
+### yarn prettier
+
+Runs Prettier to automatically format code according to a specified style guide. This script can be used to ensure consistent code formatting across the entire project.
+
+### yarn lint
+
+Runs ESLint to check for and report any syntax errors, potential bugs, or stylistic issues in the code. This script can be used to maintain code quality and readability.
