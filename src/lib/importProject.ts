@@ -44,6 +44,10 @@ function isIgnoredFile(fileName: string) {
   return ignoredFiles.some((f) => (f instanceof RegExp ? f.test(fileName) : f === fileName))
 }
 
+function isTilemapFile(file: unknown): file is TilemapFile {
+  return typeof file === 'object' && file !== null && 'data' in file && 'name' in file
+}
+
 async function parseFile(rawFile: JSZip.JSZipObject): Promise<LoadedFile | undefined> {
   const file = await rawFile.async('blob')
 
@@ -111,7 +115,8 @@ export async function importProject(blob: string | ArrayBuffer): Promise<{
         name: tilesetName,
       }
     } else {
-      unmodifedFiles.push(file.data)
+      // TODO I have no idea why the type is not being inferred here
+      unmodifedFiles.push((file as any).data)
     }
   }
 
