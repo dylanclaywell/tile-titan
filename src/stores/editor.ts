@@ -243,6 +243,15 @@ export const useEditorStore = defineStore('editor', () => {
       .filter((l) => l.sortOrder < layer.sortOrder)
       .sort((a, b) => b.sortOrder - a.sortOrder)[0]
 
+    const layerEqual = file.layers.find((l) => l.sortOrder === layer.sortOrder && l.id !== layer.id)
+
+    // This isn't supposed to happen, but just in case, we'll decrease the sort order of the layer below this one to move this one up
+    if (layerEqual) {
+      layer.sortOrder = layer.sortOrder - 1
+      file.layers = file.layers.slice(0).sort((a, b) => b.sortOrder - a.sortOrder)
+      return
+    }
+
     if (!layerBelow) return
 
     const tempSortOrder = layerBelow.sortOrder
@@ -259,6 +268,15 @@ export const useEditorStore = defineStore('editor', () => {
     const layer = file.layers.find((l) => l.id === layerId)
 
     if (!layer) return
+
+    const layerEqual = file.layers.find((l) => l.sortOrder === layer.sortOrder && l.id !== layer.id)
+
+    // This isn't supposed to happen, but just in case, we'll decrease the sort order of the layer below this one to move this one up
+    if (layerEqual) {
+      layer.sortOrder = layer.sortOrder + 1
+      file.layers = file.layers.slice(0).sort((a, b) => b.sortOrder - a.sortOrder)
+      return
+    }
 
     const layerAbove: LayerType | undefined = file.layers
       .filter((l) => l.sortOrder > layer.sortOrder)
@@ -560,8 +578,8 @@ export const useEditorStore = defineStore('editor', () => {
     selectLayer,
     deleteLayer,
     toggleLayerVisibility,
-    moveLayerUp: decreaseSortOrder,
-    moveLayerDown: increaseSortOrder,
+    decreaseSortOrder,
+    increaseSortOrder,
 
     /// Structures
     selectedStructureId,

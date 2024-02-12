@@ -207,7 +207,9 @@ eventEmitter.on('reset-view', () => {
         v-show="store.showGrid"
       ></canvas>
       <component
-        v-for="layer in store.selectedFile?.layers.filter((l) => l.isVisible) ?? []"
+        v-for="layer in (store.selectedFile?.layers.filter((l) => l.isVisible) ?? []).sort(
+          (a, b) => (a.sortOrder - b.sortOrder ? -1 : 1),
+        )"
         :key="layer.id"
         :is="layerComponents[layer.type]"
         :id="layer.id"
